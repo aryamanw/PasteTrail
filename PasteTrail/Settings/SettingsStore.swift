@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import ServiceManagement
+import os
 
 @MainActor
 final class SettingsStore: ObservableObject {
@@ -32,6 +33,7 @@ final class SettingsStore: ObservableObject {
     // MARK: - Init
 
     private let defaults: UserDefaults
+    private var isApplyingLoginItem = false
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
@@ -55,10 +57,19 @@ final class SettingsStore: ObservableObject {
     // MARK: - Login item
 
     private func applyLoginItem() {
-        if launchAtLogin {
-            try? SMAppService.mainApp.register()
-        } else {
-            try? SMAppService.mainApp.unregister()
+        guard !isApplyingLoginItem else { return }
+        isApplyingLoginItem = true
+        defer { isApplyingLoginItem = false }
+        do {
+            if launchAtLogin {
+                try SMAppService.mainApp.register()
+            } else {
+                try SMAppService.mainApp.unregister()
+            }
+        } catch {
+            // Revert the toggle so the UI stays consistent with the actual state
+            launchAtLogin = !launchAtLogin
+            os_log(.error, "SMAppService toggle failed: %{public}@", error.localizedDescription)
         }
     }
 
