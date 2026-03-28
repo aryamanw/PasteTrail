@@ -82,4 +82,12 @@ final class ClipStoreTests: XCTestCase {
         let results = try store.search("hello")
         XCTAssertEqual(results.count, 1)
     }
+
+    func testSearchIsUnicodeCaseInsensitive() throws {
+        let store = try makeInMemoryStore()
+        try store.insert(ClipItem(id: UUID(), text: "Héllo World", sourceApp: "com.test", timestamp: Date()))
+        // lowercased query should still find it via lower(text) LIKE
+        let results = try store.search("héllo")
+        XCTAssertEqual(results.count, 1)
+    }
 }

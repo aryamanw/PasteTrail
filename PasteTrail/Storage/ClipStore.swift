@@ -90,9 +90,10 @@ final class ClipStore: ObservableObject {
     /// Case-insensitive substring search. Empty query returns all clips.
     func search(_ query: String) throws -> [ClipItem] {
         guard !query.isEmpty else { return clips }
+        let normalizedQuery = query.lowercased()
         return try dbQueue.read { db in
             try ClipItem
-                .filter(ClipItem.Columns.text.like("%\(query)%"))
+                .filter(sql: "lower(text) LIKE ?", arguments: ["%\(normalizedQuery)%"])
                 .order(ClipItem.Columns.timestamp.desc)
                 .fetchAll(db)
         }
