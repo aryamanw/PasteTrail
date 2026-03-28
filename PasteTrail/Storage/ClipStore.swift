@@ -57,4 +57,31 @@ final class ClipStore: ObservableObject {
             try ClipItem.order(ClipItem.Columns.timestamp.desc).fetchAll(db)
         }
     }
+
+    // MARK: - Insert
+
+    /// Insert a clip, enforce rolling cap, skip if identical to the most-recent clip.
+    /// - Parameter cap: override for the effective cap (used in tests). Defaults to currentCap.
+    func insert(_ item: ClipItem, cap: Int? = nil) throws {
+        // Dedup: skip if text matches the most-recently stored clip exactly
+        if let latest = clips.first, latest.text == item.text { return }
+
+        let effectiveCap = cap ?? currentCap
+        try dbQueue.write { db in
+            try item.insert(db)
+            // Enforce rolling cap: delete oldest entries beyond the limit
+            let total = try ClipItem.fetchCount(db)
+            if total > effectiveCap {
+                let overflow = total - effectiveCap
+                let oldest = try ClipItem
+                    .order(ClipItem.Columns.timestamp.asc)
+                    .limit(overflow)
+                    .fetchAll(db)
+                for old in oldest { try old.delete(db) }
+            }
+        }
+        try loadClips()
+    }
+
+    var currentCap: Int { ClipStore.freeCap } // will be replaced in Task 8 with licence-aware logic
 }
