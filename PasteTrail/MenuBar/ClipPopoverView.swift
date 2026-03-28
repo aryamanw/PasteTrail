@@ -258,12 +258,3 @@ private extension Color {
         self.init(red: r, green: g, blue: b)
     }
 }
-
-// Temporary stub until Task 13 implements the real SettingsView
-struct SettingsView: View {
-    @Binding var isPresented: Bool
-    var body: some View {
-        Text("Settings coming soon")
-            .frame(width: 380, height: 400)
-    }
-}

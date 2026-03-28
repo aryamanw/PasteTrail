@@ -17,6 +17,8 @@
 		AB3C4D5E6F7A8B9C0D1E2F3A /* ClipboardMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3C4D5E6F7A8B9C0D1E2F3A /* ClipboardMonitor.swift */; };
 		CD4D5E6F7A8B9C0D1E2F3A4B /* ClipboardMonitorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4D5E6F7A8B9C0D1E2F3A4B /* ClipboardMonitorTests.swift */; };
 		EF5E6F7A8B9C0D1E2F3A4B5C /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE5E6F7A8B9C0D1E2F3A4B5C /* SettingsStore.swift */; };
+		A36F7A8B9C0D1E2F3A4B5C6D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B36F7A8B9C0D1E2F3A4B5C6D /* SettingsView.swift */; };
+		A46F7A8B9C0D1E2F3A4B5C6D /* GumroadLicenseValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46F7A8B9C0D1E2F3A4B5C6D /* GumroadLicenseValidator.swift */; };
 		FA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift */; };
 		A1B2C3D4E5F6A7B8C9D0E1F2 /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5A6B7C8D9E0F1A2 /* MenuBarController.swift */; };
 		A2B3C4D5E6F7A8B9C0D1E2F3 /* ClipPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A7B8C9D0E1F2A3 /* ClipPopoverView.swift */; };
@@ -46,6 +48,8 @@
 		BC3C4D5E6F7A8B9C0D1E2F3A /* ClipboardMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardMonitor.swift; sourceTree = "<group>"; };
 		DE4D5E6F7A8B9C0D1E2F3A4B /* ClipboardMonitorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardMonitorTests.swift; sourceTree = "<group>"; };
 		FE5E6F7A8B9C0D1E2F3A4B5C /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		B36F7A8B9C0D1E2F3A4B5C6D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B46F7A8B9C0D1E2F3A4B5C6D /* GumroadLicenseValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GumroadLicenseValidator.swift; sourceTree = "<group>"; };
 		EA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStoreTests.swift; sourceTree = "<group>"; };
 		B1C2D3E4F5A6B7C8D9E0F1A2 /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarController.swift; sourceTree = "<group>"; };
 		B2C3D4E5F6A7B8C9D0E1F2A3 /* ClipPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipPopoverView.swift; sourceTree = "<group>"; };
@@ -92,6 +96,8 @@
 			isa = PBXGroup;
 			children = (
 				FE5E6F7A8B9C0D1E2F3A4B5C /* SettingsStore.swift */,
+				B36F7A8B9C0D1E2F3A4B5C6D /* SettingsView.swift */,
+				B46F7A8B9C0D1E2F3A4B5C6D /* GumroadLicenseValidator.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -233,6 +239,8 @@
 				FF1A2B3C4D5E6F7A8B9C0D1E /* ClipStore.swift in Sources */,
 				AB3C4D5E6F7A8B9C0D1E2F3A /* ClipboardMonitor.swift in Sources */,
 				EF5E6F7A8B9C0D1E2F3A4B5C /* SettingsStore.swift in Sources */,
+				A36F7A8B9C0D1E2F3A4B5C6D /* SettingsView.swift in Sources */,
+				A46F7A8B9C0D1E2F3A4B5C6D /* GumroadLicenseValidator.swift in Sources */,
 				A1B2C3D4E5F6A7B8C9D0E1F2 /* MenuBarController.swift in Sources */,
 				A2B3C4D5E6F7A8B9C0D1E2F3 /* ClipPopoverView.swift in Sources */,
 			);
