@@ -17,23 +17,23 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Lifecycle
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        settingsStore = SettingsStore()
         do {
-            settingsStore = SettingsStore()
-            clipStore     = try ClipStore()
-            clipStore.settingsStore = settingsStore
+            clipStore = try ClipStore()
         } catch {
             // Storage failure is non-recoverable; log and continue without history
             print("[PasteTrail] ClipStore init failed: \(error)")
-            settingsStore = SettingsStore()
             do {
                 clipStore = try ClipStore(dbQueue: .init()) // in-memory fallback
             } catch {
                 fatalError("[PasteTrail] Failed to create in-memory ClipStore: \(error)")
             }
         }
+        clipStore.settingsStore = settingsStore
 
         // Clipboard monitor → ClipStore pipeline
         clipboardMonitor = ClipboardMonitor()
+        clipboardMonitor.excludePasswordManagers = settingsStore.excludePasswordManagers
         clipStore.monitor = clipboardMonitor
         clipboardMonitor.publisher
             .receive(on: DispatchQueue.main)
@@ -55,6 +55,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             DispatchQueue.main.async { self?.menuBarController.togglePopover() }
         }
         keyboardShortcutManager.register()
+
+        // Propagate excludePasswordManagers changes to the monitor
+        settingsStore.$excludePasswordManagers
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] value in self?.clipboardMonitor.excludePasswordManagers = value }
+            .store(in: &cancellables)
 
         // Observe monitoring toggle to update icon
         settingsStore.$isMonitoringEnabled

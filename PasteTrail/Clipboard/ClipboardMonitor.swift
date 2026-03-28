@@ -11,6 +11,8 @@ final class ClipboardMonitor {
     /// so the resulting changeCount bump is ignored.
     var isPasting = false
 
+    var excludePasswordManagers: Bool = true
+
     // MARK: - Excluded bundle IDs
 
     private static let excludedBundleIDs: Set<String> = [
@@ -52,7 +54,9 @@ final class ClipboardMonitor {
         guard !isPasting else { return }
 
         let frontBundleID = NSWorkspace.shared.frontmostApplication?.bundleIdentifier
-        guard !Self.isExcluded(bundleID: frontBundleID) else { return }
+        if excludePasswordManagers {
+            guard !Self.isExcluded(bundleID: frontBundleID) else { return }
+        }
 
         guard let text = pasteboard.string(forType: .string), !text.isEmpty else { return }
 

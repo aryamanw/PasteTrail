@@ -180,8 +180,9 @@ struct ClipPopoverView: View {
     // MARK: - Paste
 
     private func closeAndPaste(_ clip: ClipItem) {
-        // Close popover first, then paste after a brief delay (see ClipStore.paste)
-        NSApp.keyWindow?.close()
+        // Ask MenuBarController to close the popover via performClose (preserves NSPopover state),
+        // then paste — ClipStore.paste has a 0.1s delay that lets the popover animate away first.
+        NotificationCenter.default.post(name: .closePopover, object: nil)
         clipStore.paste(clip)
     }
 }

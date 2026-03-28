@@ -6,6 +6,7 @@ final class KeyboardShortcutManager {
 
     private var hotKeyRef: EventHotKeyRef?
     private var eventHandler: EventHandlerRef?
+    private var handlerUPP: EventHandlerUPP?
     var onActivate: (() -> Void)?
 
     private let hotKeyID = EventHotKeyID(signature: fourCharCode("PTRL"), id: 1)
@@ -13,7 +14,7 @@ final class KeyboardShortcutManager {
     // MARK: - Register / Unregister
 
     func register() {
-        var handlerUPP: EventHandlerUPP? = { (_, event, userData) -> OSStatus in
+        handlerUPP = { (_, event, userData) -> OSStatus in
             guard let userData = userData else { return OSStatus(eventNotHandledErr) }
             let manager = Unmanaged<KeyboardShortcutManager>.fromOpaque(userData).takeUnretainedValue()
             manager.onActivate?()

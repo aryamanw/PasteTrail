@@ -21,7 +21,10 @@ final class MenuBarController {
         precondition(clipStore != nil && settingsStore != nil, "MenuBarController.setup() called before dependencies were set")
         setupStatusItem()
         setupPopover()
+        NotificationCenter.default.addObserver(self, selector: #selector(handleClosePopover), name: .closePopover, object: nil)
     }
+
+    @objc private func handleClosePopover() { closePopover() }
 
     // MARK: - Toggle (called by KeyboardShortcutManager and status item click)
 
@@ -129,12 +132,16 @@ final class MenuBarController {
     }
 
     @objc private func openSettings() {
-        // Posts a notification consumed by ClipPopoverView to show settings overlay
-        NotificationCenter.default.post(name: .showSettings, object: nil)
+        // Open the popover first, then notify ClipPopoverView on the next runloop pass
+        // so the view is visible and subscribed before the notification fires.
         if !(popover?.isShown ?? false) { togglePopover() }
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(name: .showSettings, object: nil)
+        }
     }
 }
 
 extension Notification.Name {
     static let showSettings = Notification.Name("PasteTrailShowSettings")
+    static let closePopover  = Notification.Name("PasteTrailClosePopover")
 }
