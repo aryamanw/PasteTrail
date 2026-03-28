@@ -42,8 +42,14 @@ final class KeyboardShortcutManager {
     }
 
     func unregister() {
-        if let ref = hotKeyRef { UnregisterEventHotKey(ref) }
-        if let handler = eventHandler { RemoveEventHandler(handler) }
+        if let ref = hotKeyRef {
+            UnregisterEventHotKey(ref)
+            hotKeyRef = nil
+        }
+        if let handler = eventHandler {
+            RemoveEventHandler(handler)
+            eventHandler = nil
+        }
     }
 
     deinit { unregister() }
@@ -52,6 +58,7 @@ final class KeyboardShortcutManager {
 // MARK: - Helpers
 
 private func fourCharCode(_ string: String) -> OSType {
+    precondition(string.unicodeScalars.count == 4, "fourCharCode requires exactly 4 characters")
     var result: OSType = 0
     for char in string.unicodeScalars {
         result = (result << 8) + OSType(char.value)
