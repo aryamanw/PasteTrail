@@ -20,6 +20,8 @@ final class ClipItemTests: XCTestCase {
         XCTAssertEqual(fetched.count, 1)
         XCTAssertEqual(fetched[0].text, "hello")
         XCTAssertEqual(fetched[0].sourceApp, "com.apple.Terminal")
+        XCTAssertEqual(fetched[0].id, original.id)
+        XCTAssertEqual(fetched[0].timestamp.timeIntervalSince1970, original.timestamp.timeIntervalSince1970, accuracy: 0.001)
     }
 
     func testClipItemDatabaseColumnNames() {

@@ -1,7 +1,7 @@
 import Foundation
 import GRDB
 
-struct ClipItem: Identifiable, Codable, Equatable {
+struct ClipItem: Identifiable, Codable, Equatable, FetchableRecord, PersistableRecord {
     var id: UUID
     var text: String
     var sourceApp: String   // bundle ID of the source application
@@ -10,7 +10,7 @@ struct ClipItem: Identifiable, Codable, Equatable {
 
 // MARK: - GRDB
 
-extension ClipItem: FetchableRecord, PersistableRecord {
+extension ClipItem {
     static let databaseTableName = "clip_items"
 
     static var databaseColumnNames: [String] {
