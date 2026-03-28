@@ -1,0 +1,439 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		300A18C1F8DC01A7A3BC6AF7 /* PasteTrailApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7244886155DCA5C9CA0AFA2C /* PasteTrailApp.swift */; };
+		4673660780E494BA4809D9AF /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 74A497C742B168F3C440812C /* GRDB */; };
+		EF9C684BF2C85EC511AAFD4E /* PasteTrailTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E162C2987F588DB2A6786AD1 /* PasteTrailTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		CFA3164675F43B976018E5AF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EE12BD71E32C4FDA66FB3A6D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B9BD263F5FA9CBA24A50F5D3;
+			remoteInfo = PasteTrail;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		03BCA2E11FD56802119B4B4E /* PasteTrailTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PasteTrailTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0B340F56A77B189EFDA6FA33 /* PasteTrail.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PasteTrail.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C7D6EBAD11C68D82A8E33BB /* PasteTrail.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PasteTrail.entitlements; sourceTree = "<group>"; };
+		4CD9E7CA61B3D57B64825BCA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		7244886155DCA5C9CA0AFA2C /* PasteTrailApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteTrailApp.swift; sourceTree = "<group>"; };
+		E162C2987F588DB2A6786AD1 /* PasteTrailTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteTrailTests.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B5F8BE4A9AF52092E1EA71B5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4673660780E494BA4809D9AF /* GRDB in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		918B28D58BA8388541985525 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				7244886155DCA5C9CA0AFA2C /* PasteTrailApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		9BF19718F712254CF541B4F6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0B340F56A77B189EFDA6FA33 /* PasteTrail.app */,
+				03BCA2E11FD56802119B4B4E /* PasteTrailTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		ABD5396D7131B50F7339C50E /* PasteTrail */ = {
+			isa = PBXGroup;
+			children = (
+				4CD9E7CA61B3D57B64825BCA /* Info.plist */,
+				4C7D6EBAD11C68D82A8E33BB /* PasteTrail.entitlements */,
+				918B28D58BA8388541985525 /* App */,
+			);
+			path = PasteTrail;
+			sourceTree = "<group>";
+		};
+		C86EB3C618C514E0170C7AD2 = {
+			isa = PBXGroup;
+			children = (
+				ABD5396D7131B50F7339C50E /* PasteTrail */,
+				DAE062261A0838980F835702 /* PasteTrailTests */,
+				9BF19718F712254CF541B4F6 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		DAE062261A0838980F835702 /* PasteTrailTests */ = {
+			isa = PBXGroup;
+			children = (
+				E162C2987F588DB2A6786AD1 /* PasteTrailTests.swift */,
+			);
+			path = PasteTrailTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B9BD263F5FA9CBA24A50F5D3 /* PasteTrail */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F28CE2760500A150554E46C4 /* Build configuration list for PBXNativeTarget "PasteTrail" */;
+			buildPhases = (
+				7F8B4F6950E9D2E6BA6E7A84 /* Sources */,
+				B5F8BE4A9AF52092E1EA71B5 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PasteTrail;
+			packageProductDependencies = (
+				74A497C742B168F3C440812C /* GRDB */,
+			);
+			productName = PasteTrail;
+			productReference = 0B340F56A77B189EFDA6FA33 /* PasteTrail.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D9F5CA9E0DFA8CA4D25F1257 /* PasteTrailTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7FEAA04B0610F73380F821AA /* Build configuration list for PBXNativeTarget "PasteTrailTests" */;
+			buildPhases = (
+				C1C199836CDCC22B22091A51 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B4B1EC79A4AD7A6D95465E58 /* PBXTargetDependency */,
+			);
+			name = PasteTrailTests;
+			packageProductDependencies = (
+			);
+			productName = PasteTrailTests;
+			productReference = 03BCA2E11FD56802119B4B4E /* PasteTrailTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EE12BD71E32C4FDA66FB3A6D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 16EEC156C10EE06533AA0CB6 /* Build configuration list for PBXProject "PasteTrail" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = C86EB3C618C514E0170C7AD2;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A2AB53D5388816343FEB32B5 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 9BF19718F712254CF541B4F6 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B9BD263F5FA9CBA24A50F5D3 /* PasteTrail */,
+				D9F5CA9E0DFA8CA4D25F1257 /* PasteTrailTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7F8B4F6950E9D2E6BA6E7A84 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				300A18C1F8DC01A7A3BC6AF7 /* PasteTrailApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C1C199836CDCC22B22091A51 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EF9C684BF2C85EC511AAFD4E /* PasteTrailTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B4B1EC79A4AD7A6D95465E58 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B9BD263F5FA9CBA24A50F5D3 /* PasteTrail */;
+			targetProxy = CFA3164675F43B976018E5AF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		262E64C138A78F254566ACFB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		53ACC713B30211B2190ED93E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		90D156F09CECC027471C91E7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_ENTITLEMENTS = PasteTrail/PasteTrail.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_FILE = PasteTrail/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.pastetrail;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.10;
+			};
+			name = Release;
+		};
+		B09B195D3883D2533BFBA462 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.10;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PasteTrail.app/Contents/MacOS/PasteTrail";
+			};
+			name = Release;
+		};
+		B133AC2C88FC95B67D62D182 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.10;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PasteTrail.app/Contents/MacOS/PasteTrail";
+			};
+			name = Debug;
+		};
+		BE4D3A42F45D0542F95092E1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_ENTITLEMENTS = PasteTrail/PasteTrail.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				INFOPLIST_FILE = PasteTrail/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = app.pastetrail;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.10;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		16EEC156C10EE06533AA0CB6 /* Build configuration list for PBXProject "PasteTrail" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				53ACC713B30211B2190ED93E /* Debug */,
+				262E64C138A78F254566ACFB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7FEAA04B0610F73380F821AA /* Build configuration list for PBXNativeTarget "PasteTrailTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B133AC2C88FC95B67D62D182 /* Debug */,
+				B09B195D3883D2533BFBA462 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		F28CE2760500A150554E46C4 /* Build configuration list for PBXNativeTarget "PasteTrail" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BE4D3A42F45D0542F95092E1 /* Debug */,
+				90D156F09CECC027471C91E7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A2AB53D5388816343FEB32B5 /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDB.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.29.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		74A497C742B168F3C440812C /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A2AB53D5388816343FEB32B5 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			productName = GRDB;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = EE12BD71E32C4FDA66FB3A6D /* Project object */;
+}

@@ -1,0 +1,43 @@
+name: PasteTrail
+options:
+  deploymentTarget:
+    macOS: "13.0"
+  xcodeVersion: "15.0"
+
+packages:
+  GRDB:
+    url: https://github.com/groue/GRDB.swift
+    from: "6.29.3"
+
+targets:
+  PasteTrail:
+    type: application
+    platform: macOS
+    sources:
+      - path: PasteTrail
+    settings:
+      base:
+        SWIFT_VERSION: "5.10"
+        PRODUCT_BUNDLE_IDENTIFIER: app.pastetrail
+        INFOPLIST_FILE: PasteTrail/Info.plist
+        CODE_SIGN_ENTITLEMENTS: PasteTrail/PasteTrail.entitlements
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGNING_REQUIRED: "NO"
+        CODE_SIGNING_ALLOWED: "NO"
+    dependencies:
+      - package: GRDB
+        product: GRDB
+    preBuildScripts: []
+
+  PasteTrailTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: PasteTrailTests
+    dependencies:
+      - target: PasteTrail
+    settings:
+      base:
+        SWIFT_VERSION: "5.10"
