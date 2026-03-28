@@ -22,6 +22,7 @@
 		FA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift */; };
 		A1B2C3D4E5F6A7B8C9D0E1F2 /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5A6B7C8D9E0F1A2 /* MenuBarController.swift */; };
 		A2B3C4D5E6F7A8B9C0D1E2F3 /* ClipPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A7B8C9D0E1F2A3 /* ClipPopoverView.swift */; };
+		D1E2F3A4B5C6D7E8F9A0B1C2 /* OnboardingWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F4A5B6C7D8E9F0A1B2 /* OnboardingWindowController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		EA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStoreTests.swift; sourceTree = "<group>"; };
 		B1C2D3E4F5A6B7C8D9E0F1A2 /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarController.swift; sourceTree = "<group>"; };
 		B2C3D4E5F6A7B8C9D0E1F2A3 /* ClipPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipPopoverView.swift; sourceTree = "<group>"; };
+		C1D2E3F4A5B6C7D8E9F0A1B2 /* OnboardingWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWindowController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +113,14 @@
 			path = MenuBar;
 			sourceTree = "<group>";
 		};
+		E2F3A4B5C6D7E8F9A0B1C2D3 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				C1D2E3F4A5B6C7D8E9F0A1B2 /* OnboardingWindowController.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
 		9BF19718F712254CF541B4F6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -130,6 +140,7 @@
 				FF3C4D5E6F7A8B9C0D1E2F3A /* Storage */,
 				AB5E6F7A8B9C0D1E2F3A4B5C /* Settings */,
 				C3D4E5F6A7B8C9D0E1F2A3B4 /* MenuBar */,
+				E2F3A4B5C6D7E8F9A0B1C2D3 /* Onboarding */,
 			);
 			path = PasteTrail;
 			sourceTree = "<group>";
@@ -243,6 +254,7 @@
 				A46F7A8B9C0D1E2F3A4B5C6D /* GumroadLicenseValidator.swift in Sources */,
 				A1B2C3D4E5F6A7B8C9D0E1F2 /* MenuBarController.swift in Sources */,
 				A2B3C4D5E6F7A8B9C0D1E2F3 /* ClipPopoverView.swift in Sources */,
+				D1E2F3A4B5C6D7E8F9A0B1C2 /* OnboardingWindowController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
