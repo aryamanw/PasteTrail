@@ -25,7 +25,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // Storage failure is non-recoverable; log and continue without history
             print("[PasteTrail] ClipStore init failed: \(error)")
             settingsStore = SettingsStore()
-            clipStore     = try! ClipStore(dbQueue: .init()) // in-memory fallback
+            do {
+                clipStore = try ClipStore(dbQueue: .init()) // in-memory fallback
+            } catch {
+                fatalError("[PasteTrail] Failed to create in-memory ClipStore: \(error)")
+            }
         }
 
         // Clipboard monitor → ClipStore pipeline
@@ -64,11 +68,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 }
             }
             .store(in: &cancellables)
-
-        // Start monitoring
-        if settingsStore.isMonitoringEnabled {
-            clipboardMonitor.start()
-        }
 
         // Onboarding (first launch or no Accessibility permission)
         onboardingWindow = OnboardingWindowController.makeIfNeeded()
