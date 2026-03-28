@@ -84,4 +84,17 @@ final class ClipStore: ObservableObject {
     }
 
     var currentCap: Int { ClipStore.freeCap } // will be replaced in Task 8 with licence-aware logic
+
+    // MARK: - Search
+
+    /// Case-insensitive substring search. Empty query returns all clips.
+    func search(_ query: String) throws -> [ClipItem] {
+        guard !query.isEmpty else { return clips }
+        return try dbQueue.read { db in
+            try ClipItem
+                .filter(ClipItem.Columns.text.like("%\(query)%"))
+                .order(ClipItem.Columns.timestamp.desc)
+                .fetchAll(db)
+        }
+    }
 }

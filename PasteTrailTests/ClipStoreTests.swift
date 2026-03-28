@@ -54,4 +54,32 @@ final class ClipStoreTests: XCTestCase {
         try store.insert(c)
         XCTAssertEqual(store.clips.count, 3)
     }
+
+    func testSearchReturnsMatchingClips() throws {
+        let store = try makeInMemoryStore()
+        try store.insert(ClipItem(id: UUID(), text: "git commit -m fix", sourceApp: "com.test", timestamp: Date(timeIntervalSince1970: 1)))
+        try store.insert(ClipItem(id: UUID(), text: "npm install", sourceApp: "com.test", timestamp: Date(timeIntervalSince1970: 2)))
+        try store.insert(ClipItem(id: UUID(), text: "git push origin main", sourceApp: "com.test", timestamp: Date(timeIntervalSince1970: 3)))
+
+        let results = try store.search("git")
+        XCTAssertEqual(results.count, 2)
+        XCTAssertTrue(results.allSatisfy { $0.text.lowercased().contains("git") })
+    }
+
+    func testSearchEmptyQueryReturnsAll() throws {
+        let store = try makeInMemoryStore()
+        try store.insert(ClipItem(id: UUID(), text: "aaa", sourceApp: "com.test", timestamp: Date(timeIntervalSince1970: 1)))
+        try store.insert(ClipItem(id: UUID(), text: "bbb", sourceApp: "com.test", timestamp: Date(timeIntervalSince1970: 2)))
+
+        let results = try store.search("")
+        XCTAssertEqual(results.count, 2)
+    }
+
+    func testSearchIsCaseInsensitive() throws {
+        let store = try makeInMemoryStore()
+        try store.insert(ClipItem(id: UUID(), text: "Hello World", sourceApp: "com.test", timestamp: Date()))
+
+        let results = try store.search("hello")
+        XCTAssertEqual(results.count, 1)
+    }
 }
