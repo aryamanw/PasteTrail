@@ -41,7 +41,7 @@ struct ClipPopoverView: View {
             header
             Divider().opacity(0.5)
 
-            if clipStore.clips.isEmpty {
+            if displayedClips.isEmpty {
                 emptyState
             } else {
                 clipList
@@ -123,7 +123,7 @@ struct ClipPopoverView: View {
     private var upgradeBanner: some View {
         HStack {
             VStack(alignment: .leading, spacing: 2) {
-                Text("You've saved 5 clips")
+                Text("You've saved \(ClipStore.freeCap) clips")
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(.primary)
                 Text("Upgrade for 500 — $9.99 once")
