@@ -16,6 +16,8 @@
 		FF2B3C4D5E6F7A8B9C0D1E2F /* ClipStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE2B3C4D5E6F7A8B9C0D1E2F /* ClipStoreTests.swift */; };
 		AB3C4D5E6F7A8B9C0D1E2F3A /* ClipboardMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3C4D5E6F7A8B9C0D1E2F3A /* ClipboardMonitor.swift */; };
 		CD4D5E6F7A8B9C0D1E2F3A4B /* ClipboardMonitorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4D5E6F7A8B9C0D1E2F3A4B /* ClipboardMonitorTests.swift */; };
+		EF5E6F7A8B9C0D1E2F3A4B5C /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE5E6F7A8B9C0D1E2F3A4B5C /* SettingsStore.swift */; };
+		FA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,6 +43,8 @@
 		EE2B3C4D5E6F7A8B9C0D1E2F /* ClipStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipStoreTests.swift; sourceTree = "<group>"; };
 		BC3C4D5E6F7A8B9C0D1E2F3A /* ClipboardMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardMonitor.swift; sourceTree = "<group>"; };
 		DE4D5E6F7A8B9C0D1E2F3A4B /* ClipboardMonitorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardMonitorTests.swift; sourceTree = "<group>"; };
+		FE5E6F7A8B9C0D1E2F3A4B5C /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		EA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStoreTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +84,14 @@
 			path = Storage;
 			sourceTree = "<group>";
 		};
+		AB5E6F7A8B9C0D1E2F3A4B5C /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				FE5E6F7A8B9C0D1E2F3A4B5C /* SettingsStore.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 		9BF19718F712254CF541B4F6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -97,6 +109,7 @@
 				918B28D58BA8388541985525 /* App */,
 				EE3F4A5B6C7D8E9F0A1B2C3D /* Clipboard */,
 				FF3C4D5E6F7A8B9C0D1E2F3A /* Storage */,
+				AB5E6F7A8B9C0D1E2F3A4B5C /* Settings */,
 			);
 			path = PasteTrail;
 			sourceTree = "<group>";
@@ -117,6 +130,7 @@
 				BB2C3D4E5F6A7B8C9D0E1F2A /* ClipItemTests.swift */,
 				EE2B3C4D5E6F7A8B9C0D1E2F /* ClipStoreTests.swift */,
 				DE4D5E6F7A8B9C0D1E2F3A4B /* ClipboardMonitorTests.swift */,
+				EA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift */,
 			);
 			path = PasteTrailTests;
 			sourceTree = "<group>";
@@ -204,6 +218,7 @@
 				CC1D2E3F4A5B6C7D8E9F0A1B /* ClipItem.swift in Sources */,
 				FF1A2B3C4D5E6F7A8B9C0D1E /* ClipStore.swift in Sources */,
 				AB3C4D5E6F7A8B9C0D1E2F3A /* ClipboardMonitor.swift in Sources */,
+				EF5E6F7A8B9C0D1E2F3A4B5C /* SettingsStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -215,6 +230,7 @@
 				AA1B2C3D4E5F6A7B8C9D0E1F /* ClipItemTests.swift in Sources */,
 				FF2B3C4D5E6F7A8B9C0D1E2F /* ClipStoreTests.swift in Sources */,
 				CD4D5E6F7A8B9C0D1E2F3A4B /* ClipboardMonitorTests.swift in Sources */,
+				FA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
