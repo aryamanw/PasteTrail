@@ -90,4 +90,14 @@ final class ClipStoreTests: XCTestCase {
         let results = try store.search("héllo")
         XCTAssertEqual(results.count, 1)
     }
+
+    func testPaidCapEnforced() throws {
+        let store = try makeInMemoryStore()
+        for i in 0..<502 {
+            let item = ClipItem(id: UUID(), text: "clip \(i)", sourceApp: "com.test", timestamp: Date(timeIntervalSince1970: Double(i)))
+            try store.insert(item, cap: ClipStore.paidCap)
+        }
+        XCTAssertEqual(store.clips.count, ClipStore.paidCap)
+        XCTAssertEqual(store.clips[0].text, "clip 501")
+    }
 }

@@ -83,7 +83,11 @@ final class ClipStore: ObservableObject {
         try loadClips()
     }
 
-    var currentCap: Int { ClipStore.freeCap } // will be replaced in Task 8 with licence-aware logic
+    weak var settingsStore: SettingsStore?
+
+    var currentCap: Int {
+        (settingsStore?.isUnlocked == true) ? ClipStore.paidCap : ClipStore.freeCap
+    }
 
     // MARK: - Search
 
