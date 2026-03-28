@@ -111,20 +111,18 @@ final class ClipStore: ObservableObject {
     /// Writes the clip to the pasteboard and synthesises ⌘V into the frontmost app.
     /// The popover must be closed by the caller before this is invoked.
     func paste(_ item: ClipItem) {
+        guard AXIsProcessTrusted() else { return }
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         pasteboard.setString(item.text, forType: .string)
 
-        // Suppress the monitor so this write doesn't create a duplicate clip
         monitor?.isPasting = true
 
-        // Brief delay lets the popover close and the previous app regain focus
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+        Task { @MainActor [weak self] in
+            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 s
             self?.sendCommandV()
-            // Re-enable monitoring after the synthetic event is dispatched
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
-                self?.monitor?.isPasting = false
-            }
+            try? await Task.sleep(nanoseconds: 300_000_000) // 0.3 s
+            self?.monitor?.isPasting = false
         }
     }
 
