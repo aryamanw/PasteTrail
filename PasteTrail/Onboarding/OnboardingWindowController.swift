@@ -11,7 +11,9 @@ final class OnboardingWindowController: NSWindowController {
     }
 
     init() {
-        let view = OnboardingView()
+        // Placeholder window — replaced after super.init so we can capture self
+        super.init(window: nil)
+        let view = OnboardingView(onDismiss: { [weak self] in self?.window?.close() })
         let hosting = NSHostingController(rootView: view)
         let window = NSWindow(contentViewController: hosting)
         window.styleMask = [.titled, .closable]
@@ -19,7 +21,7 @@ final class OnboardingWindowController: NSWindowController {
         window.setContentSize(NSSize(width: 380, height: 340))
         window.center()
         window.isReleasedWhenClosed = false
-        super.init(window: window)
+        self.window = window
     }
 
     required init?(coder: NSCoder) { fatalError() }
@@ -29,6 +31,7 @@ final class OnboardingWindowController: NSWindowController {
 
 private struct OnboardingView: View {
 
+    let onDismiss: () -> Void
     @State private var isGranted = AXIsProcessTrusted()
 
     var body: some View {
@@ -38,7 +41,7 @@ private struct OnboardingView: View {
             // Icon
             RoundedRectangle(cornerRadius: 13)
                 .fill(
-                    LinearGradient(colors: [Color(hex: "#6D8196").opacity(0.3), Color(hex: "#4A4A4A").opacity(0.4)],
+                    LinearGradient(colors: [Color(hex: "#6D8196"), Color(hex: "#4A4A4A")],
                                    startPoint: .topLeading, endPoint: .bottomTrailing)
                 )
                 .frame(width: 56, height: 56)
@@ -84,7 +87,7 @@ private struct OnboardingView: View {
 
             Button("Already granted? Check Again") {
                 isGranted = AXIsProcessTrusted()
-                if isGranted { NSApp.keyWindow?.close() }
+                if isGranted { onDismiss() }
             }
             .buttonStyle(.plain)
             .font(.system(size: 12))
