@@ -8,8 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		300A18C1F8DC01A7A3BC6AF7 /* PasteTrailApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7244886155DCA5C9CA0AFA2C /* PasteTrailApp.swift */; };
+		CC1D2E3F4A5B6C7D8E9F0A1B /* ClipItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2E3F4A5B6C7D8E9F0A1B2C /* ClipItem.swift */; };
 		4673660780E494BA4809D9AF /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 74A497C742B168F3C440812C /* GRDB */; };
 		EF9C684BF2C85EC511AAFD4E /* PasteTrailTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E162C2987F588DB2A6786AD1 /* PasteTrailTests.swift */; };
+		AA1B2C3D4E5F6A7B8C9D0E1F /* ClipItemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2C3D4E5F6A7B8C9D0E1F2A /* ClipItemTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -28,7 +30,9 @@
 		4C7D6EBAD11C68D82A8E33BB /* PasteTrail.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PasteTrail.entitlements; sourceTree = "<group>"; };
 		4CD9E7CA61B3D57B64825BCA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		7244886155DCA5C9CA0AFA2C /* PasteTrailApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteTrailApp.swift; sourceTree = "<group>"; };
+		DD2E3F4A5B6C7D8E9F0A1B2C /* ClipItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipItem.swift; sourceTree = "<group>"; };
 		E162C2987F588DB2A6786AD1 /* PasteTrailTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteTrailTests.swift; sourceTree = "<group>"; };
+		BB2C3D4E5F6A7B8C9D0E1F2A /* ClipItemTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipItemTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +55,14 @@
 			path = App;
 			sourceTree = "<group>";
 		};
+		EE3F4A5B6C7D8E9F0A1B2C3D /* Clipboard */ = {
+			isa = PBXGroup;
+			children = (
+				DD2E3F4A5B6C7D8E9F0A1B2C /* ClipItem.swift */,
+			);
+			path = Clipboard;
+			sourceTree = "<group>";
+		};
 		9BF19718F712254CF541B4F6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -66,6 +78,7 @@
 				4CD9E7CA61B3D57B64825BCA /* Info.plist */,
 				4C7D6EBAD11C68D82A8E33BB /* PasteTrail.entitlements */,
 				918B28D58BA8388541985525 /* App */,
+				EE3F4A5B6C7D8E9F0A1B2C3D /* Clipboard */,
 			);
 			path = PasteTrail;
 			sourceTree = "<group>";
@@ -83,6 +96,7 @@
 			isa = PBXGroup;
 			children = (
 				E162C2987F588DB2A6786AD1 /* PasteTrailTests.swift */,
+				BB2C3D4E5F6A7B8C9D0E1F2A /* ClipItemTests.swift */,
 			);
 			path = PasteTrailTests;
 			sourceTree = "<group>";
@@ -167,6 +181,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				300A18C1F8DC01A7A3BC6AF7 /* PasteTrailApp.swift in Sources */,
+				CC1D2E3F4A5B6C7D8E9F0A1B /* ClipItem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -175,6 +190,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EF9C684BF2C85EC511AAFD4E /* PasteTrailTests.swift in Sources */,
+				AA1B2C3D4E5F6A7B8C9D0E1F /* ClipItemTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -334,7 +350,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -350,7 +370,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",

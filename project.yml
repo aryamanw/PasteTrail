@@ -41,3 +41,7 @@ targets:
     settings:
       base:
         SWIFT_VERSION: "5.10"
+        GENERATE_INFOPLIST_FILE: "YES"
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGNING_REQUIRED: "NO"
+        CODE_SIGNING_ALLOWED: "NO"
