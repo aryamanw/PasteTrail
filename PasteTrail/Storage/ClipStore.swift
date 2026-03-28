@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import GRDB
+import AppKit
 
 @MainActor
 final class ClipStore: ObservableObject {
@@ -101,5 +102,43 @@ final class ClipStore: ObservableObject {
                 .order(ClipItem.Columns.timestamp.desc)
                 .fetchAll(db)
         }
+    }
+
+    // MARK: - Paste
+
+    weak var monitor: ClipboardMonitor?
+
+    /// Writes the clip to the pasteboard and synthesises ⌘V into the frontmost app.
+    /// The popover must be closed by the caller before this is invoked.
+    func paste(_ item: ClipItem) {
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(item.text, forType: .string)
+
+        // Suppress the monitor so this write doesn't create a duplicate clip
+        monitor?.isPasting = true
+
+        // Brief delay lets the popover close and the previous app regain focus
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            self?.sendCommandV()
+            // Re-enable monitoring after the synthetic event is dispatched
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+                self?.monitor?.isPasting = false
+            }
+        }
+    }
+
+    private func sendCommandV() {
+        guard AXIsProcessTrusted() else { return }
+        let src = CGEventSource(stateID: .hidSystemState)
+        let vKey = CGKeyCode(0x09) // kVK_ANSI_V
+        guard
+            let keyDown = CGEvent(keyboardEventSource: src, virtualKey: vKey, keyDown: true),
+            let keyUp   = CGEvent(keyboardEventSource: src, virtualKey: vKey, keyDown: false)
+        else { return }
+        keyDown.flags = .maskCommand
+        keyUp.flags   = .maskCommand
+        keyDown.post(tap: .cgAnnotatedSessionEventTap)
+        keyUp.post(tap: .cgAnnotatedSessionEventTap)
     }
 }
