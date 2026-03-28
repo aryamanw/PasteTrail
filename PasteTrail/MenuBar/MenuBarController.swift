@@ -1,0 +1,137 @@
+// PasteTrail/MenuBar/MenuBarController.swift
+import AppKit
+import SwiftUI
+
+@MainActor
+final class MenuBarController {
+
+    // MARK: - Dependencies (set by AppDelegate after init)
+
+    var clipStore: ClipStore!
+    var settingsStore: SettingsStore!
+
+    // MARK: - Private
+
+    private var statusItem: NSStatusItem?
+    private var popover: NSPopover?
+
+    // MARK: - Setup
+
+    func setup() {
+        setupStatusItem()
+        setupPopover()
+    }
+
+    // MARK: - Toggle (called by KeyboardShortcutManager and status item click)
+
+    func togglePopover() {
+        guard let button = statusItem?.button else { return }
+        if let popover, popover.isShown {
+            popover.performClose(nil)
+        } else {
+            popover?.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+            popover?.contentViewController?.view.window?.makeKey()
+        }
+    }
+
+    func closePopover() {
+        popover?.performClose(nil)
+    }
+
+    // MARK: - Icon state
+
+    func updateIcon(paused: Bool) {
+        statusItem?.button?.alphaValue = paused ? 0.6 : 1.0
+    }
+
+    // MARK: - Private helpers
+
+    private func setupStatusItem() {
+        let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+        item.button?.image = NSImage(systemSymbolName: "doc.on.clipboard", accessibilityDescription: "Paste Trail")
+        item.button?.image?.isTemplate = true
+        item.button?.action = #selector(handleClick(_:))
+        item.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
+        item.button?.target = self
+        statusItem = item
+    }
+
+    private func setupPopover() {
+        let p = NSPopover()
+        p.behavior = .transient
+        p.animates = true
+        let rootView = ClipPopoverView()
+            .environmentObject(clipStore)
+            .environmentObject(settingsStore)
+        p.contentViewController = NSHostingController(rootView: rootView)
+        p.contentSize = NSSize(width: 380, height: 480)
+        popover = p
+    }
+
+    @objc private func handleClick(_ sender: NSStatusBarButton) {
+        let event = NSApp.currentEvent
+        if event?.type == .rightMouseUp {
+            showContextMenu()
+        } else {
+            togglePopover()
+        }
+    }
+
+    // MARK: - Right-click context menu
+
+    private func showContextMenu() {
+        let menu = NSMenu()
+
+        let header = NSMenuItem(title: settingsStore.isMonitoringEnabled ? "Paste Trail" : "Paste Trail · Paused", action: nil, keyEquivalent: "")
+        header.isEnabled = false
+        menu.addItem(header)
+        menu.addItem(.separator())
+
+        let open = NSMenuItem(title: "Open Paste Trail", action: #selector(openPopover), keyEquivalent: "")
+        open.target = self
+        menu.addItem(open)
+
+        menu.addItem(.separator())
+
+        if settingsStore.isMonitoringEnabled {
+            let pause = NSMenuItem(title: "Pause Monitoring", action: #selector(toggleMonitoring), keyEquivalent: "")
+            pause.target = self
+            menu.addItem(pause)
+        } else {
+            let resume = NSMenuItem(title: "Resume Monitoring", action: #selector(toggleMonitoring), keyEquivalent: "")
+            resume.target = self
+            menu.addItem(resume)
+        }
+
+        let settings = NSMenuItem(title: "Settings…", action: #selector(openSettings), keyEquivalent: "")
+        settings.target = self
+        menu.addItem(settings)
+
+        menu.addItem(.separator())
+
+        let quit = NSMenuItem(title: "Quit Paste Trail", action: #selector(NSApp.terminate(_:)), keyEquivalent: "q")
+        quit.target = NSApp
+        menu.addItem(quit)
+
+        statusItem?.menu = menu
+        statusItem?.button?.performClick(nil)
+        statusItem?.menu = nil // Reset so left-click still opens popover
+    }
+
+    @objc private func openPopover() { togglePopover() }
+
+    @objc private func toggleMonitoring() {
+        settingsStore.isMonitoringEnabled.toggle()
+        updateIcon(paused: !settingsStore.isMonitoringEnabled)
+    }
+
+    @objc private func openSettings() {
+        // Posts a notification consumed by ClipPopoverView to show settings overlay
+        NotificationCenter.default.post(name: .showSettings, object: nil)
+        if !(popover?.isShown ?? false) { togglePopover() }
+    }
+}
+
+extension Notification.Name {
+    static let showSettings = Notification.Name("PasteTrailShowSettings")
+}
