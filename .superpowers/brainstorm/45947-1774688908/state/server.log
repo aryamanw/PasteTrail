@@ -1,0 +1,5 @@
+{"type":"server-started","port":55059,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:55059","screen_dir":"/Users/aryaman/Documents/Antigravity/Clipstack/.superpowers/brainstorm/45947-1774688908/content","state_dir":"/Users/aryaman/Documents/Antigravity/Clipstack/.superpowers/brainstorm/45947-1774688908/state"}
+{"type":"screen-added","file":"/Users/aryaman/Documents/Antigravity/Clipstack/.superpowers/brainstorm/45947-1774688908/content/inkwash-design.html"}
+{"type":"screen-added","file":"/Users/aryaman/Documents/Antigravity/Clipstack/.superpowers/brainstorm/45947-1774688908/content/inkwash-refined.html"}
+{"type":"screen-added","file":"/Users/aryaman/Documents/Antigravity/Clipstack/.superpowers/brainstorm/45947-1774688908/content/cap-update.html"}
+{"type":"server-stopped","reason":"idle timeout"}

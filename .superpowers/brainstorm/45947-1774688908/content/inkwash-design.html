@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clipstack — Ink Wash Glassmorphism</title>
+<style>
+  :root {
+    /* Ink Wash palette */
+    --ink-charcoal:   #4A4A4A;
+    --ink-silver:     #CBCBCB;
+    --ink-cream:      #FFFFE3;
+    --ink-steel:      #6D8196;
+
+    /* Derived tokens */
+    --bg-deep:        #1e1e1e;
+    --bg-mid:         #2c3038;
+    --glass-fill:     rgba(74,74,74,0.14);
+    --glass-fill-row: rgba(109,129,150,0.10);
+    --glass-sel:      rgba(109,129,150,0.22);
+    --glass-border:   rgba(203,203,203,0.16);
+    --glass-divider:  rgba(203,203,203,0.09);
+    --text-primary:   rgba(255,255,255,0.88);
+    --text-secondary: rgba(203,203,203,0.55);
+    --text-tertiary:  rgba(203,203,203,0.32);
+    --accent:         #6D8196;
+    --accent-bright:  #8ea5b8;
+    --cream-glow:     rgba(255,255,227,0.08);
+    --blur:           blur(22px) saturate(160%);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: -apple-system, 'SF Pro Display', BlinkMacSystemFont, sans-serif;
+    background: radial-gradient(ellipse at 20% 30%, #2a2e38 0%, #1a1c22 45%, #232830 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 36px 24px 48px;
+    gap: 32px;
+    color: var(--text-primary);
+  }
+
+  /* Atmospheric depth layers */
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background:
+      radial-gradient(ellipse 420px 320px at 15% 20%, rgba(109,129,150,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 300px 300px at 85% 75%, rgba(74,74,74,0.22) 0%, transparent 70%),
+      radial-gradient(ellipse 200px 180px at 60% 15%, rgba(255,255,227,0.04) 0%, transparent 70%);
+    pointer-events:none; z-index:0;
+  }
+
+  h1 { font-size:20px; font-weight:500; color:var(--text-primary); letter-spacing:-0.2px; position:relative; z-index:1; }
+  .subtitle { font-size:12px; color:var(--text-tertiary); margin-top:5px; text-align:center; position:relative; z-index:1; line-height:1.5; }
+
+  .row { display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap; justify-content:center; position:relative; z-index:1; }
+
+  .label {
+    font-size:10px; font-weight:600; letter-spacing:0.7px;
+    text-transform:uppercase; color:var(--text-tertiary);
+    text-align:center; margin-bottom:8px; font-family:-apple-system,sans-serif;
+  }
+
+  /* ── Popover shell ── */
+  .popover {
+    width:380px;
+    background: var(--glass-fill);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border:1px solid var(--glass-border);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:
+      0 2px 1px rgba(255,255,255,0.04) inset,
+      0 0 0 0.5px rgba(255,255,255,0.05) inset,
+      0 16px 48px rgba(0,0,0,0.55),
+      0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  /* ── Header ── */
+  .popover-header {
+    height:44px;
+    display:flex; align-items:center; gap:8px;
+    padding:0 12px;
+    border-bottom:0.5px solid var(--glass-divider);
+    background:rgba(255,255,255,0.02);
+  }
+
+  .search-icon {
+    width:14px; height:14px; flex-shrink:0;
+    color: var(--text-tertiary);
+  }
+
+  .search-field {
+    flex:1;
+    background:transparent; border:none; outline:none;
+    font-size:13px; color:var(--text-primary);
+    font-family:inherit; caret-color:var(--accent-bright);
+  }
+  .search-field::placeholder { color:var(--text-tertiary); }
+
+  .clear-btn {
+    width:16px; height:16px; border-radius:50%;
+    background:rgba(255,255,255,0.12);
+    display:flex; align-items:center; justify-content:center;
+    font-size:9px; color:var(--text-secondary);
+    cursor:pointer; flex-shrink:0;
+  }
+
+  .gear-btn {
+    width:28px; height:28px; border-radius:7px;
+    background:rgba(255,255,255,0.05);
+    border:0.5px solid var(--glass-border);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; flex-shrink:0;
+    transition:background 150ms, border-color 150ms;
+  }
+  .gear-btn:hover { background:rgba(255,255,255,0.1); }
+  .gear-btn svg { width:13px; height:13px; color:var(--text-secondary); }
+
+  /* ── Clip list ── */
+  .clips-list { padding:5px; display:flex; flex-direction:column; gap:2px; }
+
+  .clip-row {
+    display:flex; align-items:flex-start; gap:9px;
+    padding:9px 10px;
+    border-radius:9px;
+    border:0.5px solid transparent;
+    cursor:pointer;
+    transition:background 120ms ease, border-color 120ms ease;
+    position:relative;
+  }
+  .clip-row:hover {
+    background:var(--glass-fill-row);
+    border-color:rgba(203,203,203,0.1);
+  }
+  .clip-row.active {
+    background:var(--glass-sel);
+    border-color:rgba(109,129,150,0.3);
+  }
+  /* Cream left-bar for most-recent */
+  .clip-row.active::before {
+    content:'';
+    position:absolute; left:0; top:8px; bottom:8px;
+    width:2px; border-radius:1px;
+    background: linear-gradient(180deg, var(--ink-cream), var(--accent));
+    opacity:0.7;
+  }
+
+  .type-badge {
+    width:28px; height:28px; flex-shrink:0;
+    border-radius:7px;
+    background:rgba(255,255,255,0.06);
+    border:0.5px solid rgba(203,203,203,0.12);
+    display:flex; align-items:center; justify-content:center;
+    font-size:9px; font-weight:700; letter-spacing:0.3px;
+    color:var(--text-tertiary);
+    font-family:'SF Mono', monospace;
+    margin-top:1px;
+  }
+  .type-badge.img {
+    background:rgba(109,129,150,0.14);
+    border-color:rgba(109,129,150,0.25);
+    color:var(--accent-bright);
+  }
+  .type-badge.url {
+    background:rgba(255,255,227,0.07);
+    border-color:rgba(255,255,227,0.15);
+    color:rgba(255,255,200,0.6);
+  }
+
+  .clip-content { flex:1; min-width:0; }
+
+  .clip-text {
+    font-family:'SF Mono', 'Menlo', monospace;
+    font-size:12px; line-height:1.45;
+    color:var(--text-primary);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .clip-text.prose {
+    font-family:-apple-system,sans-serif;
+    font-size:13px;
+  }
+  .clip-text .match { color:var(--ink-cream); font-weight:600; }
+
+  .clip-meta {
+    font-size:11px; margin-top:2px;
+    color:var(--text-tertiary);
+    font-family:-apple-system,sans-serif;
+  }
+  .clip-meta .dot { color:rgba(203,203,203,0.2); margin:0 3px; }
+
+  /* ── Footer ── */
+  .popover-footer {
+    padding:7px 16px;
+    border-top:0.5px solid var(--glass-divider);
+    font-size:11px; color:var(--text-tertiary);
+    text-align:center; font-family:-apple-system,sans-serif;
+    letter-spacing:0.1px;
+  }
+
+  /* ── Upgrade banner ── */
+  .upgrade-banner {
+    margin:5px 5px 3px;
+    padding:10px 12px;
+    border-radius:9px;
+    background:linear-gradient(135deg, rgba(109,129,150,0.18), rgba(74,74,74,0.22));
+    border:0.5px solid rgba(109,129,150,0.28);
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    position:relative; overflow:hidden;
+  }
+  .upgrade-banner::before {
+    content:'';
+    position:absolute; top:-20px; right:-20px;
+    width:80px; height:80px;
+    border-radius:50%;
+    background:radial-gradient(rgba(255,255,227,0.08), transparent 70%);
+    pointer-events:none;
+  }
+  .upgrade-text { font-size:12px; color:var(--text-secondary); line-height:1.45; font-family:-apple-system,sans-serif; }
+  .upgrade-text strong { color:var(--ink-cream); font-weight:600; }
+  .upgrade-cta {
+    background:linear-gradient(135deg, var(--accent), #4a6070);
+    border:none; border-radius:7px;
+    color:rgba(255,255,255,0.9); font-size:11px; font-weight:600;
+    padding:6px 11px; cursor:pointer; white-space:nowrap; flex-shrink:0;
+    font-family:-apple-system,sans-serif; letter-spacing:0.2px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.3);
+    transition:opacity 150ms;
+  }
+  .upgrade-cta:hover { opacity:0.85; }
+
+  /* ── Settings ── */
+  .settings-popover {
+    width:380px;
+    background:var(--glass-fill);
+    backdrop-filter:var(--blur);
+    -webkit-backdrop-filter:var(--blur);
+    border:1px solid var(--glass-border);
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 2px 1px rgba(255,255,255,0.04) inset, 0 16px 48px rgba(0,0,0,0.55);
+  }
+
+  .settings-header {
+    height:44px;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 14px;
+    border-bottom:0.5px solid var(--glass-divider);
+    background:rgba(255,255,255,0.02);
+  }
+  .back-btn { font-size:13px; color:var(--accent-bright); cursor:pointer; display:flex; align-items:center; gap:3px; }
+  .settings-title { font-size:13px; font-weight:600; color:var(--text-primary); }
+
+  .settings-body { padding:8px 6px 4px; }
+
+  .section-label {
+    font-size:10px; font-weight:700; letter-spacing:0.7px;
+    text-transform:uppercase; color:var(--text-tertiary);
+    padding:10px 10px 4px;
+    font-family:-apple-system,sans-serif;
+  }
+
+  .settings-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:9px 10px; border-radius:8px;
+    transition:background 120ms;
+    gap:12px;
+  }
+  .settings-row:hover { background:rgba(255,255,255,0.04); }
+
+  .row-label { font-size:13px; color:var(--text-primary); font-family:-apple-system,sans-serif; }
+  .row-sub { font-size:11px; color:var(--text-tertiary); margin-top:1px; font-family:-apple-system,sans-serif; }
+
+  /* Toggle — matches macOS system toggle proportions (HIG: 51x31 native, scaled to 36x20) */
+  .toggle {
+    width:36px; height:20px; border-radius:10px;
+    background:#34c759; flex-shrink:0; position:relative;
+    box-shadow:inset 0 0 0 0.5px rgba(0,0,0,0.15);
+  }
+  .toggle::after {
+    content:''; position:absolute;
+    width:16px; height:16px; border-radius:50%;
+    background:white; top:2px; right:2px;
+    box-shadow:0 1px 4px rgba(0,0,0,0.35);
+  }
+  .toggle.off { background:rgba(255,255,255,0.14); }
+  .toggle.off::after { right:auto; left:2px; }
+
+  .shortcut-pill {
+    display:flex; gap:3px; align-items:center;
+  }
+  .key {
+    background:rgba(255,255,255,0.08);
+    border:0.5px solid rgba(203,203,203,0.18);
+    border-radius:5px;
+    padding:2px 6px;
+    font-size:11px; font-family:'SF Mono',monospace;
+    color:var(--text-secondary);
+    box-shadow:0 1px 0 rgba(0,0,0,0.25);
+  }
+
+  .divider { height:0.5px; background:var(--glass-divider); margin:3px 10px; }
+
+  .plan-chip {
+    font-size:11px; font-weight:600;
+    background:rgba(109,129,150,0.18);
+    border:0.5px solid rgba(109,129,150,0.3);
+    border-radius:5px; padding:2px 7px;
+    color:var(--accent-bright);
+    font-family:-apple-system,sans-serif;
+  }
+
+  .settings-footer {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 16px;
+    border-top:0.5px solid var(--glass-divider);
+  }
+  .version { font-size:11px; color:var(--text-tertiary); font-family:-apple-system,sans-serif; }
+  .quit { font-size:12px; color:rgba(255,90,90,0.6); cursor:pointer; font-family:-apple-system,sans-serif; transition:color 150ms; }
+  .quit:hover { color:rgba(255,90,90,0.85); }
+
+  /* ── Tokens panel ── */
+  .tokens-card {
+    width:340px;
+    background:var(--glass-fill);
+    backdrop-filter:var(--blur);
+    -webkit-backdrop-filter:var(--blur);
+    border:1px solid var(--glass-border);
+    border-radius:14px; padding:16px;
+  }
+  .tokens-card h3 { font-size:13px; font-weight:600; color:var(--text-primary); margin-bottom:12px; }
+  .token-row {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:5px 0; border-bottom:0.5px solid var(--glass-divider);
+    font-size:11px;
+  }
+  .token-name { font-family:'SF Mono',monospace; color:var(--ink-steel); opacity:0.9; }
+  .token-val { color:var(--text-secondary); font-family:'SF Mono',monospace; display:flex; align-items:center; gap:5px; }
+  .swatch {
+    display:inline-block; width:11px; height:11px;
+    border-radius:3px; border:0.5px solid rgba(255,255,255,0.1);
+    flex-shrink:0;
+  }
+
+  /* ── HIG note ── */
+  .hig-box {
+    width:100%; max-width:760px;
+    background:rgba(109,129,150,0.08);
+    border:0.5px solid rgba(109,129,150,0.2);
+    border-radius:10px; padding:14px 18px;
+    position:relative; z-index:1;
+  }
+  .hig-box h4 { font-size:11px; font-weight:700; letter-spacing:0.7px; text-transform:uppercase; color:var(--accent-bright); margin-bottom:8px; }
+  .hig-grid { display:grid; grid-template-columns:1fr 1fr; gap:4px 24px; }
+  .hig-rule { font-size:11px; color:var(--text-secondary); font-family:-apple-system,sans-serif; line-height:1.5; }
+  .hig-rule span { color:rgba(255,255,227,0.5); font-weight:600; }
+</style>
+</head>
+<body>
+
+<div style="text-align:center; position:relative; z-index:1;">
+  <h1>Clipstack — Ink Wash Glassmorphism</h1>
+  <p class="subtitle">Palette: #4A4A4A · #CBCBCB · #FFFFE3 · #6D8196 &nbsp;|&nbsp; Apple HIG + frontend-design spacing rules applied</p>
+</div>
+
+<div class="row">
+
+  <!-- Main Popover -->
+  <div style="position:relative;z-index:1;">
+    <p class="label">Main Popover — Items Present</p>
+    <div class="popover">
+      <div class="popover-header">
+        <svg class="search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="6.5" cy="6.5" r="4.5"/><path d="M10 10l3 3"/>
+        </svg>
+        <input class="search-field" placeholder="Search clips…">
+        <div class="gear-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:14px;height:14px;color:rgba(203,203,203,0.5)">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </div>
+      </div>
+      <div class="clips-list">
+        <div class="clip-row active">
+          <div class="type-badge">T</div>
+          <div class="clip-content">
+            <div class="clip-text">git commit -m "fix: auth token refresh…</div>
+            <div class="clip-meta">2 seconds ago<span class="dot">·</span>Terminal</div>
+          </div>
+        </div>
+        <div class="clip-row">
+          <div class="type-badge url">URL</div>
+          <div class="clip-content">
+            <div class="clip-text">https://github.com/stripe/stripe-ios/p…</div>
+            <div class="clip-meta">1 min ago<span class="dot">·</span>Chrome</div>
+          </div>
+        </div>
+        <div class="clip-row">
+          <div class="type-badge">T</div>
+          <div class="clip-content">
+            <div class="clip-text">const handleSubmit = async (e) =&gt; &#123;</div>
+            <div class="clip-meta">3 min ago<span class="dot">·</span>VS Code</div>
+          </div>
+        </div>
+        <div class="clip-row">
+          <div class="type-badge img">IMG</div>
+          <div class="clip-content">
+            <div class="clip-text prose">screenshot_2026-03-28.png</div>
+            <div class="clip-meta">5 min ago<span class="dot">·</span>Screenshot</div>
+          </div>
+        </div>
+        <div class="clip-row">
+          <div class="type-badge">T</div>
+          <div class="clip-content">
+            <div class="clip-text">npm install @supabase/supabase-js</div>
+            <div class="clip-meta">8 min ago<span class="dot">·</span>Terminal</div>
+          </div>
+        </div>
+      </div>
+      <div class="popover-footer">── 5 of 17 clips ──</div>
+    </div>
+  </div>
+
+  <!-- Search Active State -->
+  <div style="position:relative;z-index:1;">
+    <p class="label">Search Active — With Results</p>
+    <div class="popover">
+      <div class="popover-header">
+        <svg class="search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="6.5" cy="6.5" r="4.5"/><path d="M10 10l3 3"/>
+        </svg>
+        <input class="search-field" value="git commit">
+        <div class="clear-btn">✕</div>
+        <div style="width:8px"></div>
+        <div class="gear-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:14px;height:14px;color:rgba(203,203,203,0.5)">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </div>
+      </div>
+      <div class="clips-list">
+        <div class="clip-row active">
+          <div class="type-badge">T</div>
+          <div class="clip-content">
+            <div class="clip-text"><span class="match">git commit</span> -m "fix: auth token…</div>
+            <div class="clip-meta">2 seconds ago<span class="dot">·</span>Terminal</div>
+          </div>
+        </div>
+        <div class="clip-row">
+          <div class="type-badge">T</div>
+          <div class="clip-content">
+            <div class="clip-text"><span class="match">git commit</span> -m "feat: dark mode…</div>
+            <div class="clip-meta">Yesterday<span class="dot">·</span>Terminal</div>
+          </div>
+        </div>
+      </div>
+      <div class="popover-footer">── 2 results ──</div>
+    </div>
+  </div>
+
+  <!-- Upgrade Banner -->
+  <div style="position:relative;z-index:1;">
+    <p class="label">Free Tier Cap (25 clips)</p>
+    <div class="popover">
+      <div class="popover-header">
+        <svg class="search-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="6.5" cy="6.5" r="4.5"/><path d="M10 10l3 3"/>
+        </svg>
+        <input class="search-field" placeholder="Search clips…">
+        <div class="gear-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="width:14px;height:14px;color:rgba(203,203,203,0.5)">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </div>
+      </div>
+      <div class="clips-list">
+        <div class="clip-row active">
+          <div class="type-badge">T</div>
+          <div class="clip-content">
+            <div class="clip-text">git commit -m "fix: auth token refresh…</div>
+            <div class="clip-meta">Just now<span class="dot">·</span>Terminal</div>
+          </div>
+        </div>
+        <div class="clip-row">
+          <div class="type-badge">T</div>
+          <div class="clip-content">
+            <div class="clip-text">const handleSubmit = async (e) =&gt; &#123;</div>
+            <div class="clip-meta">2 min ago<span class="dot">·</span>VS Code</div>
+          </div>
+        </div>
+        <div class="clip-row">
+          <div class="type-badge">T</div>
+          <div class="clip-content">
+            <div class="clip-text">npm install @supabase/supabase-js</div>
+            <div class="clip-meta">5 min ago<span class="dot">·</span>Terminal</div>
+          </div>
+        </div>
+      </div>
+      <div class="upgrade-banner">
+        <div class="upgrade-text"><strong>You've saved 25 clips</strong><br>Upgrade for 500 — $9.99 once</div>
+        <button class="upgrade-cta">Upgrade →</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Row 2 -->
+<div class="row">
+
+  <!-- Settings -->
+  <div style="position:relative;z-index:1;">
+    <p class="label">Settings Overlay</p>
+    <div class="settings-popover">
+      <div class="settings-header">
+        <span class="back-btn">‹ Back</span>
+        <span class="settings-title">Settings</span>
+        <span style="width:48px"></span>
+      </div>
+      <div class="settings-body">
+        <div class="section-label">Monitoring</div>
+        <div class="settings-row">
+          <div class="row-label">Clipboard monitoring</div>
+          <div class="toggle"></div>
+        </div>
+        <div class="divider"></div>
+        <div class="section-label">Privacy</div>
+        <div class="settings-row">
+          <div>
+            <div class="row-label">Exclude password managers</div>
+            <div class="row-sub">1Password, Bitwarden, Keychain</div>
+          </div>
+          <div class="toggle"></div>
+        </div>
+        <div class="divider"></div>
+        <div class="section-label">Keyboard Shortcut</div>
+        <div class="settings-row">
+          <div class="row-label">Open Clipstack</div>
+          <div class="shortcut-pill">
+            <span class="key">⌘</span><span class="key">⇧</span><span class="key">V</span>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="section-label">Launch</div>
+        <div class="settings-row">
+          <div class="row-label">Launch at login</div>
+          <div class="toggle"></div>
+        </div>
+        <div class="divider"></div>
+        <div class="section-label">Account</div>
+        <div class="settings-row">
+          <div>
+            <div class="row-label">License key</div>
+            <div class="row-sub">Enter key to unlock Standard tier</div>
+          </div>
+          <span style="font-size:12px; color:var(--accent-bright); cursor:pointer;">Enter →</span>
+        </div>
+        <div class="settings-row" style="padding-bottom:12px;">
+          <div class="row-label">Plan</div>
+          <div class="plan-chip">Free · 25 clips</div>
+        </div>
+      </div>
+      <div class="settings-footer">
+        <span class="version">Clipstack v0.1.0</span>
+        <span class="quit">Quit App</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tokens panel -->
+  <div style="position:relative;z-index:1;">
+    <p class="label">SwiftUI Design Tokens</p>
+    <div class="tokens-card">
+      <h3>Ink Wash · Glassmorphism</h3>
+      <div class="token-row">
+        <span class="token-name">inkCharcoal</span>
+        <span class="token-val"><span class="swatch" style="background:#4A4A4A"></span>#4A4A4A</span>
+      </div>
+      <div class="token-row">
+        <span class="token-name">inkSilver</span>
+        <span class="token-val"><span class="swatch" style="background:#CBCBCB"></span>#CBCBCB</span>
+      </div>
+      <div class="token-row">
+        <span class="token-name">inkCream</span>
+        <span class="token-val"><span class="swatch" style="background:#FFFFE3"></span>#FFFFE3</span>
+      </div>
+      <div class="token-row">
+        <span class="token-name">inkSteel</span>
+        <span class="token-val"><span class="swatch" style="background:#6D8196"></span>#6D8196</span>
+      </div>
+      <div style="height:8px"></div>
+      <div class="token-row">
+        <span class="token-name">popoverBg</span>
+        <span class="token-val">.ultraThinMaterial</span>
+      </div>
+      <div class="token-row">
+        <span class="token-name">glassFill</span>
+        <span class="token-val"><span class="swatch" style="background:rgba(74,74,74,0.14)"></span>charcoal 14%</span>
+      </div>
+      <div class="token-row">
+        <span class="token-name">borderColor</span>
+        <span class="token-val"><span class="swatch" style="background:rgba(203,203,203,0.16)"></span>silver 16%</span>
+      </div>
+      <div class="token-row">
+        <span class="token-name">dividerColor</span>
+        <span class="token-val"><span class="swatch" style="background:rgba(203,203,203,0.09)"></span>silver 9% · 0.5pt</span>
+      </div>
+      <div class="token-row">
+        <span class="token-name">rowHover</span>
+        <span class="token-val"><span class="swatch" style="background:rgba(109,129,150,0.10)"></span>steel 10%</span>
+      </div>
+      <div class="token-row">
+        <span class="token-name">rowSelected</span>
+        <span class="token-val"><span class="swatch" style="background:rgba(109,129,150,0.22)"></span>steel 22%</span>
+      </div>
+      <div class="token-row">
+        <span class="token-name">activeBar</span>
+        <span class="token-val">cream→steel gradient · 2pt</span>
+      </div>
+      <div style="height:8px"></div>
+      <div class="token-row">
+        <span class="token-name">cornerRadius (popover)</span>
+        <span class="token-val">14pt</span>
+      </div>
+      <div class="token-row">
+        <span class="token-name">cornerRadius (row)</span>
+        <span class="token-val">9pt</span>
+      </div>
+      <div class="token-row">
+        <span class="token-name">cornerRadius (badge)</span>
+        <span class="token-val">7pt</span>
+      </div>
+      <div class="token-row">
+        <span class="token-name">rowHeight</span>
+        <span class="token-val">56pt (HIG: min 44pt touch)</span>
+      </div>
+      <div class="token-row">
+        <span class="token-name">headerHeight</span>
+        <span class="token-val">44pt (HIG: standard bar)</span>
+      </div>
+      <div class="token-row">
+        <span class="token-name">popoverWidth</span>
+        <span class="token-val">380pt</span>
+      </div>
+      <div class="token-row">
+        <span class="token-name">contentFont</span>
+        <span class="token-val">SF Mono 12pt (code)</span>
+      </div>
+      <div class="token-row">
+        <span class="token-name">metaFont</span>
+        <span class="token-val">SF Pro 11pt .tertiary</span>
+      </div>
+      <div class="token-row">
+        <span class="token-name">listPadding</span>
+        <span class="token-val">5pt (outer) · 2pt (gap)</span>
+      </div>
+      <div class="token-row">
+        <span class="token-name">rowPadding</span>
+        <span class="token-val">9pt vertical · 10pt horizontal</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- HIG compliance notes -->
+<div class="hig-box">
+  <h4>Apple HIG Compliance Notes</h4>
+  <div class="hig-grid">
+    <div class="hig-rule"><span>Touch targets:</span> All rows 56pt height — exceeds HIG minimum 44pt</div>
+    <div class="hig-rule"><span>Dividers:</span> 0.5pt hairlines (HIG: use 1px/0.5pt separators in grouped content)</div>
+    <div class="hig-rule"><span>Popover dismissal:</span> Click outside + Esc + ⌘⇧V toggle — all HIG-specified</div>
+    <div class="hig-rule"><span>No nested popovers:</span> Settings slides in-place, not as a second popover</div>
+    <div class="hig-rule"><span>Materials:</span> .ultraThinMaterial for macOS vibrancy — HIG recommended for panels</div>
+    <div class="hig-rule"><span>Icon template:</span> Menu bar icon uses SF Symbol as template image (auto dark/light)</div>
+    <div class="hig-rule"><span>Typography:</span> 11pt minimum (HIG macOS min) — metadata at 11pt, content at 12–13pt</div>
+    <div class="hig-rule"><span>Color adaptive:</span> All palette colors used as overlays on .material — adapts to light/dark</div>
+    <div class="hig-rule"><span>No dock icon:</span> Menu bar-only app should set LSUIElement=1 (no Dock presence)</div>
+    <div class="hig-rule"><span>Destructive actions:</span> Quit is in Settings footer, not exposed in main popover</div>
+  </div>
+</div>
+
+</body>
+</html>
