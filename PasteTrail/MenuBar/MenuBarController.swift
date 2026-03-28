@@ -18,6 +18,7 @@ final class MenuBarController {
     // MARK: - Setup
 
     func setup() {
+        precondition(clipStore != nil && settingsStore != nil, "MenuBarController.setup() called before dependencies were set")
         setupStatusItem()
         setupPopover()
     }
@@ -48,8 +49,10 @@ final class MenuBarController {
 
     private func setupStatusItem() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
-        item.button?.image = NSImage(systemSymbolName: "doc.on.clipboard", accessibilityDescription: "Paste Trail")
-        item.button?.image?.isTemplate = true
+        if let image = NSImage(systemSymbolName: "doc.on.clipboard", accessibilityDescription: "Paste Trail") {
+            image.isTemplate = true
+            item.button?.image = image
+        }
         item.button?.action = #selector(handleClick(_:))
         item.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
         item.button?.target = self
@@ -68,7 +71,7 @@ final class MenuBarController {
         popover = p
     }
 
-    @objc private func handleClick(_ sender: NSStatusBarButton) {
+    @objc private func handleClick(_ sender: Any?) {
         let event = NSApp.currentEvent
         if event?.type == .rightMouseUp {
             showContextMenu()
