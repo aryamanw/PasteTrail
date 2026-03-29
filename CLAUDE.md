@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Paste Trail** is a macOS menu bar clipboard manager. Menu bar icon + global `⌘⇧V` shortcut opens a searchable popover of clipboard history stored locally in SQLite. Zero network calls after license activation.
 
 - **Language:** Swift 5.10
-- **UI:** SwiftUI + AppKit (`MenuBarExtra`, `NSPopover`)
+- **UI:** SwiftUI + AppKit (`NSStatusItem`, `NSPopover`)
 - **Storage:** SQLite via GRDB.swift (Swift Package Manager)
 - **Min OS:** macOS 13 Ventura
 - **Distribution:** Gumroad direct download (v0.1); App Store pathway preserved from day one
@@ -47,7 +47,7 @@ CGEventPost         ◀── ClipStore.paste(_:)
 |------|---------------|
 | `App/PasteTrailApp.swift` | `@main`, wires `ObservableObject`s into environment |
 | `App/KeyboardShortcutManager.swift` | Carbon `RegisterEventHotKey` for global `⌘⇧V` |
-| `MenuBar/MenuBarController.swift` | `MenuBarExtra` SwiftUI wrapper; icon state (active / paused) |
+| `MenuBar/MenuBarController.swift` | `NSStatusItem` + `NSPopover`; icon state (active / paused). Uses AppKit directly instead of `MenuBarExtra` because `MenuBarExtra` doesn't support distinguishing left-click (popover) from right-click (context menu). |
 | `MenuBar/ClipPopoverView.swift` | Search field + scrollable clip list + upgrade banner |
 | `Clipboard/ClipboardMonitor.swift` | 0.5s timer polling `NSPasteboard.changeCount`; bundle ID filter |
 | `Clipboard/ClipItem.swift` | Model: `UUID id`, `String text`, `String sourceApp`, `Date timestamp` |
@@ -82,7 +82,7 @@ SQLite table: `clip_items`. Rolling delete: when inserting beyond cap, delete ol
 - `CGEventPost` paste requires the Accessibility entitlement — check `AXIsProcessTrusted()` at launch. Show the onboarding window (a real `NSWindow`, not popover) if not granted.
 - Global hotkey uses Carbon `RegisterEventHotKey` — App Store safe.
 - Login item uses `SMAppService` (macOS 13+) — App Store safe.
-- `MenuBarExtra` (SwiftUI, macOS 13+) manages the status item.
+- `NSStatusItem` + `NSPopover` manages the menu bar (not `MenuBarExtra`, which lacks right-click context menu support).
 
 ---
 

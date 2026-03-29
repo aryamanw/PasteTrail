@@ -95,10 +95,13 @@ final class ClipStore: ObservableObject {
     /// Case-insensitive substring search. Empty query returns all clips.
     func search(_ query: String) throws -> [ClipItem] {
         guard !query.isEmpty else { return clips }
-        let normalizedQuery = query.lowercased()
+        let escaped = query.lowercased()
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "%", with: "\\%")
+            .replacingOccurrences(of: "_", with: "\\_")
         return try dbQueue.read { db in
             try ClipItem
-                .filter(sql: "lower(text) LIKE ?", arguments: ["%\(normalizedQuery)%"])
+                .filter(sql: "lower(text) LIKE ? ESCAPE '\\'", arguments: ["%\(escaped)%"])
                 .order(ClipItem.Columns.timestamp.desc)
                 .fetchAll(db)
         }

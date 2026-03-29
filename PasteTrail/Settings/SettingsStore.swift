@@ -29,6 +29,7 @@ final class SettingsStore: ObservableObject {
 
     @Published private(set) var isUnlocked: Bool
     @Published private(set) var licenseKey: String?
+    @Published private(set) var licenseActivatedAt: Date?
 
     // MARK: - Init
 
@@ -42,6 +43,7 @@ final class SettingsStore: ObservableObject {
         showMenuBarIcon         = defaults.object(forKey: Keys.showMenuBarIcon)         .map { $0 as! Bool } ?? true
         launchAtLogin           = defaults.object(forKey: Keys.launchAtLogin)           .map { $0 as! Bool } ?? false
         licenseKey              = defaults.string(forKey: Keys.licenseKey)
+        licenseActivatedAt      = defaults.object(forKey: Keys.licenseActivatedAt) as? Date
         isUnlocked              = defaults.string(forKey: Keys.licenseKey) != nil
     }
 
@@ -51,6 +53,7 @@ final class SettingsStore: ObservableObject {
         defaults.set(key, forKey: Keys.licenseKey)
         defaults.set(activatedAt, forKey: Keys.licenseActivatedAt)
         licenseKey = key
+        licenseActivatedAt = activatedAt
         isUnlocked = true
     }
 
