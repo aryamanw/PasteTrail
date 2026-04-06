@@ -175,7 +175,19 @@ final class ClipStore: ObservableObject {
         guard AXIsProcessTrusted() else { return }
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
-        pasteboard.setString(item.text, forType: .string)
+
+        switch item.contentType {
+        case .text:
+            pasteboard.setString(item.text, forType: .string)
+        case .image:
+            guard let filename = item.imagePath else { return }
+            let fileURL = imagesDirectory.appendingPathComponent(filename)
+            guard let image = NSImage(contentsOf: fileURL),
+                  let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return }
+            let rep = NSBitmapImageRep(cgImage: cgImage)
+            guard let tiffData = rep.representation(using: .tiff, properties: [:]) else { return }
+            pasteboard.setData(tiffData, forType: .tiff)
+        }
 
         monitor?.isPasting = true
 
