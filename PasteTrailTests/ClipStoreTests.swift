@@ -5,10 +5,19 @@ import GRDB
 @MainActor
 final class ClipStoreTests: XCTestCase {
 
-    func makeInMemoryStore() throws -> ClipStore {
-        let tmpDir = FileManager.default.temporaryDirectory
+    private var tmpDir: URL!
+
+    override func setUp() {
+        tmpDir = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString, isDirectory: true)
-        return try ClipStore(dbQueue: DatabaseQueue(), imagesDirectory: tmpDir)
+    }
+
+    override func tearDown() {
+        try? FileManager.default.removeItem(at: tmpDir)
+    }
+
+    func makeInMemoryStore() throws -> ClipStore {
+        try ClipStore(dbQueue: DatabaseQueue(), imagesDirectory: tmpDir)
     }
 
     func testDatabaseMigrationCreatesTable() throws {
