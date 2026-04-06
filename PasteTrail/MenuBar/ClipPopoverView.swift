@@ -142,7 +142,7 @@ struct ClipPopoverView: View {
         ScrollView {
             LazyVStack(spacing: 2) {
                 ForEach(displayedClips) { clip in
-                    ClipRowView(clip: clip) {
+                    ClipRowView(clip: clip, imagesDirectory: clipStore.imagesDirectory) {
                         closeAndPaste(clip)
                     }
                 }
@@ -235,9 +235,11 @@ struct ClipPopoverView: View {
 private struct ClipRowView: View {
 
     let clip: ClipItem
+    let imagesDirectory: URL
     let onTap: () -> Void
 
     @State private var isHovered = false
+    @State private var imageDimensions: String?
 
     private var sourceAppName: String {
         guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: clip.sourceApp),
@@ -250,23 +252,11 @@ private struct ClipRowView: View {
     var body: some View {
         Button(action: onTap) {
             HStack(alignment: .top, spacing: 10) {
-                // Type badge
-                RoundedRectangle(cornerRadius: 7)
-                    .fill(.quaternary.opacity(0.5))
-                    .frame(width: 28, height: 28)
-                    .overlay(
-                        Image(systemName: "doc.text")
-                            .font(.system(size: 12))
-                            .foregroundStyle(.secondary)
-                    )
+                badge
                     .padding(.top, 1)
 
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(clip.text)
-                        .font(.system(size: 12.5, design: .monospaced))
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                        .foregroundStyle(.primary)
+                    mainContent
 
                     HStack(spacing: 5) {
                         Text(clip.timestamp, style: .relative)
@@ -286,6 +276,81 @@ private struct ClipRowView: View {
         .background(isHovered ? Color(hex: "#6D8196").opacity(0.10) : .clear,
                     in: RoundedRectangle(cornerRadius: 9))
         .onHover { isHovered = $0 }
+        .task(id: clip.id) {
+            guard clip.contentType == .image, imageDimensions == nil,
+                  let filename = clip.imagePath else { return }
+            let fileURL = imagesDirectory.appendingPathComponent(filename)
+            let size = await Task.detached(priority: .background) {
+                NSImage(contentsOf: fileURL)?.size
+            }.value
+            if let size {
+                imageDimensions = "\(Int(size.width)) × \(Int(size.height))"
+            }
+        }
+    }
+
+    // MARK: - Badge
+
+    @ViewBuilder
+    private var badge: some View {
+        switch clip.contentType {
+        case .text:
+            RoundedRectangle(cornerRadius: 7)
+                .fill(.quaternary.opacity(0.5))
+                .frame(width: 28, height: 28)
+                .overlay(
+                    Image(systemName: "doc.text")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.secondary)
+                )
+        case .image:
+            if let filename = clip.imagePath {
+                AsyncImage(url: imagesDirectory.appendingPathComponent(filename)) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 28, height: 28)
+                            .clipShape(RoundedRectangle(cornerRadius: 7))
+                    default:
+                        imagePlaceholderBadge
+                    }
+                }
+            } else {
+                imagePlaceholderBadge
+            }
+        }
+    }
+
+    private var imagePlaceholderBadge: some View {
+        RoundedRectangle(cornerRadius: 7)
+            .fill(.quaternary.opacity(0.5))
+            .frame(width: 28, height: 28)
+            .overlay(
+                Image(systemName: "photo")
+                    .font(.system(size: 12))
+                    .foregroundStyle(.secondary)
+            )
+    }
+
+    // MARK: - Main content
+
+    @ViewBuilder
+    private var mainContent: some View {
+        switch clip.contentType {
+        case .text:
+            Text(clip.text)
+                .font(.system(size: 12.5, design: .monospaced))
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .foregroundStyle(.primary)
+        case .image:
+            Text(imageDimensions ?? "Image")
+                .font(.system(size: 12.5, design: .monospaced))
+                .lineLimit(1)
+                .foregroundStyle(.primary)
+        }
     }
 }
 
