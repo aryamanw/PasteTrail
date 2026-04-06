@@ -98,10 +98,11 @@ final class ClipStore: ObservableObject {
         try loadClips()
     }
 
+    /// Writes PNG data to disk and records an image clip. File is written only after the
+    /// DB transaction commits successfully to avoid orphaned files on rollback.
     func insertImage(_ capture: ImageCapture, cap: Int? = nil) throws {
         let filename = "\(capture.id.uuidString).png"
         let fileURL = imagesDirectory.appendingPathComponent(filename)
-        try capture.pngData.write(to: fileURL)
 
         let item = ClipItem(
             id: capture.id,
@@ -128,6 +129,10 @@ final class ClipStore: ObservableObject {
                 }
             }
         }
+        // Write file after DB commit — a failed write here leaves a dangling row but
+        // is recoverable (thumbnail shows placeholder); an orphaned file from a pre-commit
+        // write is not bounded and harder to detect.
+        try capture.pngData.write(to: fileURL)
         try loadClips()
     }
 
