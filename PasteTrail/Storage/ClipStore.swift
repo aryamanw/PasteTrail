@@ -150,19 +150,37 @@ final class ClipStore: ObservableObject {
 
     // MARK: - Search
 
-    /// Case-insensitive substring search. Empty query returns all clips.
+    /// Case-insensitive search. Text clips match by content; image clips match by source app name.
+    /// Empty query returns all clips.
     func search(_ query: String) throws -> [ClipItem] {
         guard !query.isEmpty else { return clips }
         let escaped = query.lowercased()
             .replacingOccurrences(of: "\\", with: "\\\\")
             .replacingOccurrences(of: "%", with: "\\%")
             .replacingOccurrences(of: "_", with: "\\_")
-        return try dbQueue.read { db in
+
+        let textMatches = try dbQueue.read { db in
             try ClipItem
                 .filter(sql: "lower(text) LIKE ? ESCAPE '\\'", arguments: ["%\(escaped)%"])
                 .order(ClipItem.Columns.timestamp.desc)
                 .fetchAll(db)
         }
+
+        let queryLower = query.lowercased()
+        let imageMatches = clips.filter { clip in
+            clip.contentType == .image &&
+            resolveAppName(for: clip.sourceApp).lowercased().contains(queryLower)
+        }
+
+        return (textMatches + imageMatches).sorted { $0.timestamp > $1.timestamp }
+    }
+
+    private func resolveAppName(for bundleID: String) -> String {
+        guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID),
+              let name = try? url.resourceValues(forKeys: [.localizedNameKey]).localizedName else {
+            return bundleID
+        }
+        return name
     }
 
     // MARK: - Paste

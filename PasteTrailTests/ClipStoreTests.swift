@@ -179,6 +179,52 @@ final class ClipStoreTests: XCTestCase {
         XCTAssertEqual(store.clips.count, ClipStore.freeCap)
     }
 
+    func testSearchReturnsImageClipsBySourceAppBundleID() throws {
+        let store = try makeInMemoryStore()
+        let capture = ImageCapture(
+            id: UUID(),
+            pngData: makePNGData(),
+            sourceApp: "com.figma.agent",
+            timestamp: Date()
+        )
+        try store.insertImage(capture)
+
+        let results = try store.search("figma")
+        XCTAssertEqual(results.count, 1)
+        XCTAssertEqual(results[0].contentType, .image)
+    }
+
+    func testSearchDoesNotReturnImageClipForUnrelatedQuery() throws {
+        let store = try makeInMemoryStore()
+        let capture = ImageCapture(
+            id: UUID(),
+            pngData: makePNGData(),
+            sourceApp: "com.apple.screencaptureui",
+            timestamp: Date()
+        )
+        try store.insertImage(capture)
+
+        let results = try store.search("git")
+        XCTAssertEqual(results.count, 0)
+    }
+
+    func testSearchMixedResultsSortedByTimestamp() throws {
+        let store = try makeInMemoryStore()
+        try store.insert(ClipItem(id: UUID(), text: "git commit", sourceApp: "com.test",
+                                  timestamp: Date(timeIntervalSince1970: 1)))
+        let capture = ImageCapture(
+            id: UUID(), pngData: makePNGData(),
+            sourceApp: "com.git.tool",
+            timestamp: Date(timeIntervalSince1970: 2)
+        )
+        try store.insertImage(capture)
+
+        let results = try store.search("git")
+        XCTAssertEqual(results.count, 2)
+        XCTAssertEqual(results[0].contentType, .image)
+        XCTAssertEqual(results[1].contentType, .text)
+    }
+
     func testTextDedupDoesNotTriggerForImageClips() throws {
         let store = try makeInMemoryStore()
         // Two image clips in a row should both be stored (no dedup)
