@@ -39,9 +39,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         clipStore.monitor = clipboardMonitor
         clipboardMonitor.publisher
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] item in
+            .sink { [weak self] event in
                 guard let self, settingsStore.isMonitoringEnabled else { return }
-                try? clipStore.insert(item)
+                switch event {
+                case .text(let item):
+                    try? clipStore.insert(item)
+                case .image(let capture):
+                    try? clipStore.insertImage(capture)
+                }
             }
             .store(in: &cancellables)
 
