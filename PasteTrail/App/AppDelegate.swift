@@ -25,7 +25,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // Storage failure is non-recoverable; log and continue without history
             os_log(.error, "ClipStore init failed: %{public}@", error.localizedDescription)
             do {
-                clipStore = try ClipStore(dbQueue: .init()) // in-memory fallback
+                let tmpDir = FileManager.default.temporaryDirectory.appendingPathComponent("PasteTrail-fallback", isDirectory: true)
+                clipStore = try ClipStore(dbQueue: .init(), imagesDirectory: tmpDir) // in-memory fallback
             } catch {
                 fatalError("[PasteTrail] Failed to create in-memory ClipStore: \(error)")
             }

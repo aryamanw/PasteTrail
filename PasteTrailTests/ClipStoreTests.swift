@@ -6,7 +6,9 @@ import GRDB
 final class ClipStoreTests: XCTestCase {
 
     func makeInMemoryStore() throws -> ClipStore {
-        try ClipStore(dbQueue: DatabaseQueue())
+        let tmpDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        return try ClipStore(dbQueue: DatabaseQueue(), imagesDirectory: tmpDir)
     }
 
     func testDatabaseMigrationCreatesTable() throws {
@@ -15,6 +17,15 @@ final class ClipStoreTests: XCTestCase {
             try db.tableExists("clip_items")
         }
         XCTAssertTrue(tableExists)
+    }
+
+    func testMigrationV2AddsColumns() throws {
+        let store = try makeInMemoryStore()
+        let columns = try store.dbQueue.read { db in
+            try db.columns(in: "clip_items").map { $0.name }
+        }
+        XCTAssertTrue(columns.contains("contentType"))
+        XCTAssertTrue(columns.contains("imagePath"))
     }
 
     func testInsertAddsClip() throws {

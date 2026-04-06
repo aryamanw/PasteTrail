@@ -13,6 +13,7 @@ final class ClipStore: ObservableObject {
     // MARK: - Internal
 
     let dbQueue: DatabaseQueue
+    let imagesDirectory: URL
     private var cancellables = Set<AnyCancellable>()
 
     static let freeCap  = 5
@@ -20,8 +21,10 @@ final class ClipStore: ObservableObject {
 
     // MARK: - Init
 
-    init(dbQueue: DatabaseQueue) throws {
+    init(dbQueue: DatabaseQueue, imagesDirectory: URL) throws {
         self.dbQueue = dbQueue
+        self.imagesDirectory = imagesDirectory
+        try FileManager.default.createDirectory(at: imagesDirectory, withIntermediateDirectories: true)
         try Self.migrate(dbQueue)
         try loadClips()
     }
@@ -33,7 +36,8 @@ final class ClipStore: ObservableObject {
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         let dbURL = dir.appendingPathComponent("clips.sqlite")
         let queue = try DatabaseQueue(path: dbURL.path)
-        try self.init(dbQueue: queue)
+        let imagesDir = dir.appendingPathComponent("images", isDirectory: true)
+        try self.init(dbQueue: queue, imagesDirectory: imagesDir)
     }
 
     // MARK: - Migration
@@ -43,11 +47,15 @@ final class ClipStore: ObservableObject {
         migrator.registerMigration("v1") { db in
             try db.create(table: "clip_items", ifNotExists: true) { t in
                 t.column("id", .text).notNull().primaryKey()
-                t.column("contentType", .text).notNull().defaults(to: "text")
                 t.column("text", .text).notNull()
-                t.column("imagePath", .text)
                 t.column("sourceApp", .text).notNull()
                 t.column("timestamp", .datetime).notNull()
+            }
+        }
+        migrator.registerMigration("v2") { db in
+            try db.alter(table: "clip_items") { t in
+                t.add(column: "contentType", .text).notNull().defaults(to: "text")
+                t.add(column: "imagePath", .text)
             }
         }
         try migrator.migrate(db)
