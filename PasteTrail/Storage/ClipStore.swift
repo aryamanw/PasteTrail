@@ -74,8 +74,9 @@ final class ClipStore: ObservableObject {
     /// Insert a clip, enforce rolling cap, skip if identical to the most-recent clip.
     /// - Parameter cap: override for the effective cap (used in tests). Defaults to currentCap.
     func insert(_ item: ClipItem, cap: Int? = nil) throws {
-        // Dedup: skip if text matches the most-recently stored clip exactly
-        if let latest = clips.first, latest.text == item.text { return }
+        // Dedup: only skip consecutive identical text clips
+        if item.contentType == .text, let latest = clips.first,
+           latest.contentType == .text, latest.text == item.text { return }
 
         let effectiveCap = cap ?? currentCap
         try dbQueue.write { db in
@@ -88,10 +89,52 @@ final class ClipStore: ObservableObject {
                     .order(ClipItem.Columns.timestamp.asc)
                     .limit(overflow)
                     .fetchAll(db)
-                for old in oldest { try old.delete(db) }
+                for old in oldest {
+                    deleteImageFileIfNeeded(old)
+                    try old.delete(db)
+                }
             }
         }
         try loadClips()
+    }
+
+    func insertImage(_ capture: ImageCapture, cap: Int? = nil) throws {
+        let filename = "\(capture.id.uuidString).png"
+        let fileURL = imagesDirectory.appendingPathComponent(filename)
+        try capture.pngData.write(to: fileURL)
+
+        let item = ClipItem(
+            id: capture.id,
+            contentType: .image,
+            text: "",
+            imagePath: filename,
+            sourceApp: capture.sourceApp,
+            timestamp: capture.timestamp
+        )
+
+        let effectiveCap = cap ?? currentCap
+        try dbQueue.write { db in
+            try item.insert(db)
+            let total = try ClipItem.fetchCount(db)
+            if total > effectiveCap {
+                let overflow = total - effectiveCap
+                let oldest = try ClipItem
+                    .order(ClipItem.Columns.timestamp.asc)
+                    .limit(overflow)
+                    .fetchAll(db)
+                for old in oldest {
+                    deleteImageFileIfNeeded(old)
+                    try old.delete(db)
+                }
+            }
+        }
+        try loadClips()
+    }
+
+    private func deleteImageFileIfNeeded(_ item: ClipItem) {
+        guard item.contentType == .image, let filename = item.imagePath else { return }
+        let fileURL = imagesDirectory.appendingPathComponent(filename)
+        try? FileManager.default.removeItem(at: fileURL)
     }
 
     weak var settingsStore: SettingsStore?

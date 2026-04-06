@@ -120,4 +120,74 @@ final class ClipStoreTests: XCTestCase {
         XCTAssertEqual(store.clips.count, ClipStore.paidCap)
         XCTAssertEqual(store.clips[0].text, "clip 501")
     }
+
+    // MARK: - Helpers
+
+    private func makePNGData() -> Data {
+        let image = NSImage(size: NSSize(width: 2, height: 2))
+        image.lockFocus()
+        NSColor.red.setFill()
+        NSRect(x: 0, y: 0, width: 2, height: 2).fill()
+        image.unlockFocus()
+        let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil)!
+        let rep = NSBitmapImageRep(cgImage: cgImage)
+        return rep.representation(using: .png, properties: [:])!
+    }
+
+    // MARK: - Image tests
+
+    func testInsertImageWritesFileAndAddsClip() throws {
+        let store = try makeInMemoryStore()
+        let id = UUID()
+        let capture = ImageCapture(
+            id: id,
+            pngData: makePNGData(),
+            sourceApp: "com.apple.screencaptureui",
+            timestamp: Date()
+        )
+        try store.insertImage(capture)
+
+        XCTAssertEqual(store.clips.count, 1)
+        XCTAssertEqual(store.clips[0].contentType, .image)
+        XCTAssertEqual(store.clips[0].imagePath, "\(id.uuidString).png")
+
+        let fileURL = store.imagesDirectory.appendingPathComponent("\(id.uuidString).png")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
+    }
+
+    func testImageFileDeletedWhenEvictedByCap() throws {
+        let store = try makeInMemoryStore()
+        let imageID = UUID()
+        let capture = ImageCapture(
+            id: imageID,
+            pngData: makePNGData(),
+            sourceApp: "com.test",
+            timestamp: Date(timeIntervalSince1970: 0) // oldest
+        )
+        try store.insertImage(capture, cap: ClipStore.freeCap)
+        let imageFileURL = store.imagesDirectory.appendingPathComponent("\(imageID.uuidString).png")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: imageFileURL.path))
+
+        // Push image out of the cap with newer text clips
+        for i in 1...ClipStore.freeCap {
+            let item = ClipItem(id: UUID(), text: "clip \(i)", sourceApp: "com.test",
+                                timestamp: Date(timeIntervalSince1970: Double(i)))
+            try store.insert(item, cap: ClipStore.freeCap)
+        }
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: imageFileURL.path))
+        XCTAssertEqual(store.clips.count, ClipStore.freeCap)
+    }
+
+    func testTextDedupDoesNotTriggerForImageClips() throws {
+        let store = try makeInMemoryStore()
+        // Two image clips in a row should both be stored (no dedup)
+        let c1 = ImageCapture(id: UUID(), pngData: makePNGData(), sourceApp: "com.test",
+                              timestamp: Date(timeIntervalSince1970: 0))
+        let c2 = ImageCapture(id: UUID(), pngData: makePNGData(), sourceApp: "com.test",
+                              timestamp: Date(timeIntervalSince1970: 1))
+        try store.insertImage(c1)
+        try store.insertImage(c2)
+        XCTAssertEqual(store.clips.count, 2)
+    }
 }

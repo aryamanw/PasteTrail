@@ -1,6 +1,13 @@
 import AppKit
 import Combine
 
+struct ImageCapture {
+    let id: UUID
+    let pngData: Data
+    let sourceApp: String
+    let timestamp: Date
+}
+
 final class ClipboardMonitor {
 
     // MARK: - Public
