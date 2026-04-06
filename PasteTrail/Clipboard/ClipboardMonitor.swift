@@ -8,11 +8,16 @@ struct ImageCapture {
     let timestamp: Date
 }
 
+enum ClipEvent {
+    case text(ClipItem)
+    case image(ImageCapture)
+}
+
 final class ClipboardMonitor {
 
     // MARK: - Public
 
-    let publisher = PassthroughSubject<ClipItem, Never>()
+    let publisher = PassthroughSubject<ClipEvent, Never>()
 
     /// Set to true while ClipStore is writing to the pasteboard for a paste action
     /// so the resulting changeCount bump is ignored.
@@ -33,6 +38,12 @@ final class ClipboardMonitor {
         guard let id = bundleID else { return false }
         return excludedBundleIDs.contains(id)
     }
+
+    // MARK: - Image extensions
+
+    static let imageExtensions: Set<String> = [
+        "png", "jpg", "jpeg", "gif", "webp", "heic", "tiff"
+    ]
 
     // MARK: - Monitoring
 
@@ -57,7 +68,6 @@ final class ClipboardMonitor {
         guard pasteboard.changeCount != lastChangeCount else { return }
         lastChangeCount = pasteboard.changeCount
 
-        // Suppress capture while we are writing to the pasteboard for a paste
         guard !isPasting else { return }
 
         let frontBundleID = NSWorkspace.shared.frontmostApplication?.bundleIdentifier
@@ -65,14 +75,50 @@ final class ClipboardMonitor {
             guard !Self.isExcluded(bundleID: frontBundleID) else { return }
         }
 
-        guard let text = pasteboard.string(forType: .string), !text.isEmpty else { return }
+        let sourceApp = frontBundleID ?? "unknown"
+        let timestamp = Date()
 
+        // 1. TIFF or PNG image data on the pasteboard
+        if let rawData = pasteboard.data(forType: .tiff) ?? pasteboard.data(forType: NSPasteboard.PasteboardType("public.png")),
+           let image = NSImage(data: rawData),
+           let pngData = image.pngRepresentation() {
+            let capture = ImageCapture(id: UUID(), pngData: pngData, sourceApp: sourceApp, timestamp: timestamp)
+            publisher.send(.image(capture))
+            return
+        }
+
+        // 2. Finder file copy — first image file in the selection
+        if let filePaths = pasteboard.propertyList(forType: NSPasteboard.PasteboardType("NSFilenamesPboardType")) as? [String],
+           let firstImagePath = filePaths.first(where: {
+               Self.imageExtensions.contains(URL(fileURLWithPath: $0).pathExtension.lowercased())
+           }),
+           let image = NSImage(contentsOfFile: firstImagePath),
+           let pngData = image.pngRepresentation() {
+            let capture = ImageCapture(id: UUID(), pngData: pngData, sourceApp: sourceApp, timestamp: timestamp)
+            publisher.send(.image(capture))
+            return
+        }
+
+        // 3. Plain text
+        guard let text = pasteboard.string(forType: .string), !text.isEmpty else { return }
         let item = ClipItem(
             id: UUID(),
+            contentType: .text,
             text: text,
-            sourceApp: frontBundleID ?? "unknown",
-            timestamp: Date()
+            imagePath: nil,
+            sourceApp: sourceApp,
+            timestamp: timestamp
         )
-        publisher.send(item)
+        publisher.send(.text(item))
+    }
+}
+
+// MARK: - NSImage PNG helper
+
+private extension NSImage {
+    func pngRepresentation() -> Data? {
+        guard let cgImage = cgImage(forProposedRect: nil, context: nil, hints: nil) else { return nil }
+        let rep = NSBitmapImageRep(cgImage: cgImage)
+        return rep.representation(using: .png, properties: [:])
     }
 }

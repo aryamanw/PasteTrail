@@ -14,4 +14,14 @@ final class ClipboardMonitorTests: XCTestCase {
         XCTAssertFalse(ClipboardMonitor.isExcluded(bundleID: "com.apple.Terminal"))
         XCTAssertFalse(ClipboardMonitor.isExcluded(bundleID: nil))
     }
+
+    func testImageExtensionsIncludeCommonFormats() {
+        XCTAssertTrue(ClipboardMonitor.imageExtensions.contains("png"))
+        XCTAssertTrue(ClipboardMonitor.imageExtensions.contains("jpg"))
+        XCTAssertTrue(ClipboardMonitor.imageExtensions.contains("jpeg"))
+        XCTAssertTrue(ClipboardMonitor.imageExtensions.contains("gif"))
+        XCTAssertTrue(ClipboardMonitor.imageExtensions.contains("webp"))
+        XCTAssertTrue(ClipboardMonitor.imageExtensions.contains("heic"))
+        XCTAssertTrue(ClipboardMonitor.imageExtensions.contains("tiff"))
+    }
 }
