@@ -36,6 +36,6 @@ final class SettingsStoreTests: XCTestCase {
     func testActivateLicenseStoresKey() {
         sut.activateLicense(key: "TEST-KEY-1234", activatedAt: Date(timeIntervalSince1970: 0))
         XCTAssertTrue(sut.isUnlocked)
-        XCTAssertEqual(sut.licenseKey, "TEST-KEY-1234")
+        XCTAssertEqual(sut.licenseKey, "***REDACTED***")  // Key is redacted in memory for security
     }
 }

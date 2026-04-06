@@ -14,6 +14,7 @@ final class MenuBarController {
 
     private var statusItem: NSStatusItem?
     private var popover: NSPopover?
+    private var phantomAnchorWindow: NSPanel?
 
     // MARK: - Setup
 
@@ -26,15 +27,70 @@ final class MenuBarController {
 
     @objc private func handleClosePopover() { closePopover() }
 
+    // MARK: - Menu bar icon visibility
+
+    func setMenuBarIconVisible(_ visible: Bool) {
+        if visible {
+            guard statusItem == nil else { return }
+            setupStatusItem()
+        } else {
+            if let item = statusItem {
+                NSStatusBar.system.removeStatusItem(item)
+                statusItem = nil
+            }
+        }
+    }
+
     // MARK: - Toggle (called by KeyboardShortcutManager and status item click)
 
     func togglePopover() {
-        guard let button = statusItem?.button else { return }
-        if let popover, popover.isShown {
-            popover.performClose(nil)
+        if let button = statusItem?.button {
+            if let popover, popover.isShown {
+                popover.performClose(nil)
+            } else {
+                popover?.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+                popover?.contentViewController?.view.window?.makeKey()
+            }
         } else {
-            popover?.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
-            popover?.contentViewController?.view.window?.makeKey()
+            // No status item (icon hidden) — anchor to phantom panel at top of screen
+            if let popover, popover.isShown {
+                popover.performClose(nil)
+            } else {
+                showPopoverWithPhantomAnchor()
+            }
+        }
+    }
+
+    private func showPopoverWithPhantomAnchor() {
+        guard let popover, let screen = NSScreen.main else { return }
+        let x = screen.frame.midX - 0.5
+        let y = screen.frame.maxY - 1
+        let panel = NSPanel(
+            contentRect: NSRect(x: x, y: y, width: 1, height: 1),
+            styleMask: .borderless,
+            backing: .buffered,
+            defer: false
+        )
+        panel.isOpaque = false
+        panel.backgroundColor = .clear
+        panel.level = .statusBar
+        panel.orderFront(nil)
+        phantomAnchorWindow = panel
+
+        if let anchor = panel.contentView {
+            popover.show(relativeTo: anchor.bounds, of: anchor, preferredEdge: .minY)
+            popover.contentViewController?.view.window?.makeKey()
+        }
+
+        NotificationCenter.default.addObserver(
+            forName: NSPopover.didCloseNotification,
+            object: popover,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                self?.phantomAnchorWindow?.close()
+                self?.phantomAnchorWindow = nil
+            }
         }
     }
 
@@ -104,7 +160,11 @@ final class MenuBarController {
             pause.target = self
             menu.addItem(pause)
         } else {
-            let resume = NSMenuItem(title: "Resume Monitoring", action: #selector(toggleMonitoring), keyEquivalent: "")
+            let resume = NSMenuItem(title: "", action: #selector(toggleMonitoring), keyEquivalent: "")
+            resume.attributedTitle = NSAttributedString(
+                string: "Resume Monitoring",
+                attributes: [.foregroundColor: NSColor.systemGreen]
+            )
             resume.target = self
             menu.addItem(resume)
         }

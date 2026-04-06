@@ -43,7 +43,16 @@ struct SettingsView: View {
                         toggleRow("Clipboard monitoring", isOn: $settingsStore.isMonitoringEnabled)
                     }
                     settingsSection("Menu Bar") {
-                        toggleRow("Show in menu bar", isOn: $settingsStore.showMenuBarIcon)
+                        VStack(alignment: .leading, spacing: 0) {
+                            toggleRow("Show in menu bar", isOn: $settingsStore.showMenuBarIcon)
+                            if !settingsStore.showMenuBarIcon {
+                                Text("Relaunch Paste Trail to show the icon again.")
+                                    .font(.system(size: 11))
+                                    .foregroundStyle(.secondary)
+                                    .padding(.horizontal, 10)
+                                    .padding(.bottom, 6)
+                            }
+                        }
                     }
                     settingsSection("Privacy") {
                         toggleRow("Exclude password managers", isOn: $settingsStore.excludePasswordManagers,
@@ -158,6 +167,15 @@ struct SettingsView: View {
                             .padding(.horizontal, 12)
                     }
                 }
+            } else {
+                Button(action: deactivateLicense) {
+                    Text("Deactivate License")
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal, 10)
+                .padding(.top, 4)
             }
         }
     }
@@ -176,6 +194,7 @@ struct SettingsView: View {
                 await MainActor.run {
                     settingsStore.activateLicense(key: key, activatedAt: Date())
                     isActivating = false
+                    licenseKeyInput = ""
                 }
             } catch GumroadError.invalidKey {
                 await MainActor.run {
@@ -189,6 +208,10 @@ struct SettingsView: View {
                 }
             }
         }
+    }
+
+    private func deactivateLicense() {
+        settingsStore.deactivateLicense()
     }
 
     // MARK: - Helpers
@@ -222,16 +245,3 @@ struct SettingsView: View {
     }
 }
 
-// MARK: - Color hex (duplicated from ClipPopoverView; extract to shared file if it grows)
-
-private extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let r = Double((int >> 16) & 0xFF) / 255
-        let g = Double((int >>  8) & 0xFF) / 255
-        let b = Double(int & 0xFF) / 255
-        self.init(red: r, green: g, blue: b)
-    }
-}

@@ -34,27 +34,56 @@ final class SettingsStore: ObservableObject {
     // MARK: - Init
 
     private let defaults: UserDefaults
+    private let keychain = KeychainHelper.shared
     private var isApplyingLoginItem = false
+
+    private enum Keys {
+        static let isMonitoringEnabled      = "isMonitoringEnabled"
+        static let excludePasswordManagers  = "excludePasswordManagers"
+        static let showMenuBarIcon          = "showMenuBarIcon"
+        static let launchAtLogin            = "launchAtLogin"
+        static let licenseKey               = "licenseKey"
+        static let licenseActivatedAt       = "licenseActivatedAt"
+    }
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
-        isMonitoringEnabled     = defaults.object(forKey: Keys.isMonitoringEnabled)     .map { $0 as! Bool } ?? true
-        excludePasswordManagers = defaults.object(forKey: Keys.excludePasswordManagers) .map { $0 as! Bool } ?? true
-        showMenuBarIcon         = defaults.object(forKey: Keys.showMenuBarIcon)         .map { $0 as! Bool } ?? true
-        launchAtLogin           = defaults.object(forKey: Keys.launchAtLogin)           .map { $0 as! Bool } ?? false
-        licenseKey              = defaults.string(forKey: Keys.licenseKey)
-        licenseActivatedAt      = defaults.object(forKey: Keys.licenseActivatedAt) as? Date
-        isUnlocked              = defaults.string(forKey: Keys.licenseKey) != nil
+        isMonitoringEnabled = defaults.bool(forKey: Keys.isMonitoringEnabled)
+        excludePasswordManagers = defaults.bool(forKey: Keys.excludePasswordManagers)
+        showMenuBarIcon = defaults.object(forKey: Keys.showMenuBarIcon) as? Bool ?? true
+        launchAtLogin = defaults.bool(forKey: Keys.launchAtLogin)
+
+        if (try? keychain.readString(forKey: Keys.licenseKey)) != nil {
+            licenseKey = "***REDACTED***"
+            isUnlocked = true
+        } else {
+            licenseKey = nil
+            isUnlocked = false
+        }
+
+        licenseActivatedAt = defaults.object(forKey: Keys.licenseActivatedAt) as? Date
     }
 
     // MARK: - License
 
     func activateLicense(key: String, activatedAt: Date) {
-        defaults.set(key, forKey: Keys.licenseKey)
+        do {
+            try keychain.save(key, forKey: Keys.licenseKey)
+        } catch {
+            os_log(.error, "Failed to save license key to Keychain: %{public}@", error.localizedDescription)
+        }
         defaults.set(activatedAt, forKey: Keys.licenseActivatedAt)
-        licenseKey = key
+        licenseKey = "***REDACTED***"
         licenseActivatedAt = activatedAt
         isUnlocked = true
+    }
+
+    func deactivateLicense() {
+        try? keychain.delete(forKey: Keys.licenseKey)
+        defaults.removeObject(forKey: Keys.licenseActivatedAt)
+        licenseKey = nil
+        licenseActivatedAt = nil
+        isUnlocked = false
     }
 
     // MARK: - Login item
@@ -70,20 +99,8 @@ final class SettingsStore: ObservableObject {
                 try SMAppService.mainApp.unregister()
             }
         } catch {
-            // Revert the toggle so the UI stays consistent with the actual state
             launchAtLogin = !launchAtLogin
             os_log(.error, "SMAppService toggle failed: %{public}@", error.localizedDescription)
         }
-    }
-
-    // MARK: - Keys
-
-    private enum Keys {
-        static let isMonitoringEnabled      = "isMonitoringEnabled"
-        static let excludePasswordManagers  = "excludePasswordManagers"
-        static let showMenuBarIcon          = "showMenuBarIcon"
-        static let launchAtLogin            = "launchAtLogin"
-        static let licenseKey               = "licenseKey"
-        static let licenseActivatedAt       = "licenseActivatedAt"
     }
 }

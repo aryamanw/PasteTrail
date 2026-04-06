@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paste Trail — Clipboard History for Mac</title>
+  <meta name="description" content="Fast, private clipboard manager for Mac. Store up to 500 clips. One payment of $9.99. Zero subscriptions.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://cdn.tailwindcss.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: {
+              charcoal: '#4A4A4A',
+              silver: '#CBCBCB',
+              cream: '#FFFFE3',
+              steel: '#6D8196',
+              dark: '#1a1a28',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'SF Mono', 'monospace'],
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-out',
+            'slide-up': 'slideUp 0.5s ease-out',
+            'pulse-soft': 'pulseSoft 2s infinite',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            pulseSoft: {
+              '0%, 100%': { opacity: '1' },
+              '50%': { opacity: '0.7' },
+            },
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    :root {
+      --ink-charcoal: #4A4A4A;
+      --ink-silver: #CBCBCB;
+      --ink-cream: #FFFFE3;
+      --ink-steel: #6D8196;
+      --ink-steel-10: rgba(109,129,150,0.10);
+      --ink-steel-22: rgba(109,129,150,0.22);
+      --popover-bg: rgba(28, 28, 32, 0.82);
+      --text-primary: rgba(255,255,255,0.90);
+      --text-secondary: rgba(255,255,255,0.55);
+    }
+    
+    .glass {
+      background: rgba(28, 28, 32, 0.8);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    
+    .glass-light {
+      background: rgba(240, 240, 245, 0.85);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+    
+    .text-gradient {
+      background: linear-gradient(135deg, #FFFFE3 0%, #6D8196 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #6D8196 0%, #4a6070 100%);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(109,129,150,0.4);
+    }
+
+    .feature-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+    }
+
+    /* Focus styles */
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--ink-cream);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      html {
+        scroll-behavior: auto;
+      }
+    }
+
+    /* Smooth scroll */
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: rgba(109,129,150,0.3);
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(109,129,150,0.5);
+    }
+  </style>
+</head>
+<body class="bg-ink-dark text-white font-sans antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-ink-cream focus:text-ink-dark focus:font-medium">Skip to content</a>
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <svg aria-hidden="true" class="w-8 h-8 text-ink-cream" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+          <path d="M9 4V3a1 1 0 0 1 2 0v1"/>
+          <line x1="9" y1="10" x2="15" y2="10"/>
+          <line x1="9" y1="14" x2="15" y2="14"/>
+          <line x1="9" y1="18" x2="12" y2="18"/>
+        </svg>
+        <span class="text-lg font-semibold tracking-tight">Paste Trail</span>
+      </div>
+      
+      <nav aria-label="Primary" class="hidden md:flex items-center gap-8">
+        <a href="#features" class="text-white/60 hover:text-white transition-colors">Features</a>
+        <a href="#pricing" class="text-white/60 hover:text-white transition-colors">Pricing</a>
+        <a href="#faq" class="text-white/60 hover:text-white transition-colors">FAQ</a>
+      </nav>
+      
+      <div class="flex items-center gap-4">
+        <a href="https://gumroad.com/l/pastetrail" class="btn-primary px-5 py-2 rounded-lg text-sm font-medium text-white">
+          Download Free
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="main" class="min-h-screen pt-24 relative overflow-hidden">
+    <!-- Background gradients -->
+    <div class="absolute inset-0 pointer-events-none">
+      <div class="absolute top-0 left-1/4 w-96 h-96 bg-ink-steel/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-ink-steel/10 rounded-full blur-3xl"></div>
+    </div>
+    
+    <div class="max-w-6xl mx-auto px-6 py-20 md:py-32">
+      <div class="grid md:grid-cols-2 gap-12 items-center">
+        <!-- Left: Text content -->
+        <div class="animate-fade-in">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ink-steel/10 border border-ink-steel/20 text-ink-cream text-sm mb-6">
+            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse-soft"></span>
+            macOS&nbsp;13+ Ventura
+          </div>
+          
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+            Everything you copy,<br>
+            <span class="text-gradient">always within reach.</span>
+          </h1>
+          
+          <p class="text-lg text-white/60 mb-8 max-w-lg">
+            The clipboard manager that just works. Search through 500 saved items, 
+            find anything instantly, and paste with a keystroke. Your data stays on your Mac — always.
+          </p>
+          
+          <div class="flex flex-col sm:flex-row gap-4">
+            <a href="https://gumroad.com/l/pastetrail" class="btn-primary px-6 py-3 rounded-lg text-base font-semibold text-white text-center">
+              Download Free
+            </a>
+            <a href="#features" class="px-6 py-3 rounded-lg text-base font-medium text-white/60 hover:text-white transition-colors text-center border border-white/10 hover:border-white/20">
+              See Features
+            </a>
+          </div>
+          
+          <div class="mt-8 flex items-center gap-4 text-sm text-white/40">
+            <span>⌘⇧V</span>
+            <span>Global&nbsp;shortcut</span>
+            <span class="mx-2">•</span>
+            <span>500&nbsp;clips</span>
+            <span class="mx-2">•</span>
+            <span>Zero&nbsp;network&nbsp;calls</span>
+          </div>
+        </div>
+        
+        <!-- Right: Device mockup -->
+        <div class="animate-slide-up" style="animation-delay: 0.2s;">
+          <div class="relative">
+            <!-- macOS window frame -->
+            <div class="glass rounded-2xl p-1 shadow-2xl">
+              <div class="rounded-xl overflow-hidden bg-ink-dark/90 border border-white/10">
+                <!-- Fake menu bar -->
+                <div class="h-6 bg-[#1a1a28] flex items-center px-3 gap-2 border-b border-white/5">
+                  <div class="w-2.5 h-2.5 rounded-full bg-red-500/60"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/60"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-green-500/60"></div>
+                  <span class="ml-2 text-[10px] text-white/30">Finder</span>
+                </div>
+                
+                <!-- Popover UI -->
+                <div class="p-2">
+                  <div class="glass rounded-xl overflow-hidden" style="width: 320px; margin: 0 auto;">
+                    <!-- Header -->
+                    <div class="h-10 flex items-center gap-2 px-3 border-b border-white/5">
+                      <div class="flex-1 h-6 rounded-md bg-white/5 flex items-center px-2">
+                        <svg aria-hidden="true" class="w-3.5 h-3.5 text-white/30" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                          <circle cx="6.5" cy="6.5" r="4.5"/>
+                          <path d="M10 10l3.5 3.5"/>
+                        </svg>
+                        <span class="ml-2 text-xs text-white/30">Search clips…</span>
+                      </div>
+                      <button aria-label="Settings" class="w-7 h-7 rounded-md bg-white/5 flex items-center justify-center">
+                        <svg aria-hidden="true" class="w-3.5 h-3.5 text-white/40" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+                          <circle cx="8" cy="8" r="2.5"/>
+                          <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.42 1.42M11.53 11.53l1.42 1.42M3.05 12.95l1.42-1.42M11.53 4.47l1.42-1.42"/>
+                        </svg>
+                      </button>
+                    </div>
+                    
+                    <!-- Clip list -->
+                    <div class="p-2 space-y-1">
+                      <div class="flex items-start gap-2 p-2 rounded-lg bg-ink-steel/20 cursor-pointer">
+                        <div class="w-7 h-7 rounded-md bg-white/5 flex items-center justify-center flex-shrink-0">
+                          <svg aria-hidden="true" class="w-3.5 h-3.5 text-white/40" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4">
+                            <path d="M2 3h10M2 6h7M2 9h5"/>
+                          </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                          <div class="text-xs font-mono text-white/80 truncate">Meeting notes from Tuesday</div>
+                          <div class="text-[10px] text-white/40 mt-0.5">2s ago · Notes</div>
+                        </div>
+                      </div>
+                      
+                      <div class="flex items-start gap-2 p-2 rounded-lg hover:bg-white/5 cursor-pointer">
+                        <div class="w-7 h-7 rounded-md bg-white/5 flex items-center justify-center flex-shrink-0">
+                          <svg aria-hidden="true" class="w-3.5 h-3.5 text-white/40" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4">
+                            <path d="M2 3h10M2 6h7M2 9h5"/>
+                          </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                          <div class="text-xs font-mono text-white/60 truncate">https://example.com/article</div>
+                          <div class="text-[10px] text-white/30 mt-0.5">1m ago · Safari</div>
+                        </div>
+                      </div>
+                      
+                      <div class="flex items-start gap-2 p-2 rounded-lg hover:bg-white/5 cursor-pointer">
+                        <div class="w-7 h-7 rounded-md bg-white/5 flex items-center justify-center flex-shrink-0">
+                          <svg aria-hidden="true" class="w-3.5 h-3.5 text-white/40" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4">
+                            <path d="M2 3h10M2 6h7M2 9h5"/>
+                          </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                          <div class="text-xs font-mono text-white/60 truncate">Recipe for chocolate cake</div>
+                          <div class="text-[10px] text-white/30 mt-0.5">3m ago · Mail</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div class="h-6 flex items-center justify-center border-t border-white/5">
+                      <span class="text-[10px] text-white/30">5 of 5 clips</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Floating badge -->
+            <div class="absolute -right-4 top-1/2 glass px-3 py-2 rounded-lg -translate-y-1/2">
+              <span class="text-xs text-white/60">Press</span>
+              <span class="ml-1 font-mono text-ink-cream text-sm">⌘⇧V</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="py-20 bg-black/20">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Why you'll love it</h2>
+        <p class="text-white/60 max-w-2xl mx-auto">
+          Simple tools that just work. No setup, no learning curve.
+        </p>
+      </div>
+      
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Feature 1 -->
+        <div class="feature-card glass rounded-xl p-6">
+          <div class="w-12 h-12 rounded-xl bg-ink-steel/20 flex items-center justify-center mb-4">
+            <svg aria-hidden="true" class="w-6 h-6 text-ink-cream" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <path d="M6 8h.01M10 8h.01M6 12l4 4m0-4l-4 4"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Press ⌘⇧V to open</h3>
+          <p class="text-sm text-white/50">
+            Global keyboard shortcut opens your history from any app. Works everywhere.
+          </p>
+        </div>
+        
+        <!-- Feature 2 -->
+        <div class="feature-card glass rounded-xl p-6">
+          <div class="w-12 h-12 rounded-xl bg-ink-steel/20 flex items-center justify-center mb-4">
+            <svg aria-hidden="true" class="w-6 h-6 text-ink-cream" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              <polyline points="7.5 4.21 12 6.81 16.5 4.21"/>
+              <polyline points="7.5 19.79 7.5 14.6 3 12"/>
+              <polyline points="21 12 16.5 14.6 16.5 19.79"/>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+              <line x1="12" y1="22.08" x2="12" y2="12"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">500 items saved</h3>
+          <p class="text-sm text-white/50">
+            Store up to 500 clipboard entries. So they're always there when you need them.
+          </p>
+        </div>
+        
+        <!-- Feature 3 -->
+        <div class="feature-card glass rounded-xl p-6">
+          <div class="w-12 h-12 rounded-xl bg-ink-steel/20 flex items-center justify-center mb-4">
+            <svg aria-hidden="true" class="w-6 h-6 text-ink-cream" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Private by default</h3>
+          <p class="text-sm text-white/50">
+            Your clipboard data never leaves your Mac. Not once. Not ever. Verified with Little Snitch — you can check yourself.
+          </p>
+        </div>
+        
+        <!-- Feature 4 -->
+        <div class="feature-card glass rounded-xl p-6">
+          <div class="w-12 h-12 rounded-xl bg-ink-steel/20 flex items-center justify-center mb-4">
+            <svg aria-hidden="true" class="w-6 h-6 text-ink-cream" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Passwords stay safe</h3>
+          <p class="text-sm text-white/50">
+            Automatically excludes 1Password, Bitwarden, and Keychain entries from your history.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="py-20">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">How it works</h2>
+        <p class="text-white/60">
+          Three simple steps to never lose a clipboard item again.
+        </p>
+      </div>
+      
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="w-16 h-16 rounded-2xl bg-ink-steel/20 flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-ink-cream">1</div>
+          <h3 class="text-lg font-semibold mb-2">Download & open</h3>
+          <p class="text-sm text-white/50">Drop the app in your Applications folder. It shows up in your menu bar automatically.</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-16 h-16 rounded-2xl bg-ink-steel/20 flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-ink-cream">2</div>
+          <h3 class="text-lg font-semibold mb-2">Allow access</h3>
+          <p class="text-sm text-white/50">One quick permission for Accessibility (so it can paste into other apps).</p>
+        </div>
+        
+        <div class="text-center">
+          <div class="w-16 h-16 rounded-2xl bg-ink-steel/20 flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-ink-cream">3</div>
+          <h3 class="text-lg font-semibold mb-2">Start copying</h3>
+          <p class="text-sm text-white/50">Just use your Mac normally. Everything you copy gets saved. Press ⌘⇧V to find it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section id="pricing" class="py-20 bg-black/20">
+    <div class="max-w-4xl mx-auto px-6">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Simple pricing</h2>
+        <p class="text-white/60">Pay once, own forever. No subscriptions.</p>
+      </div>
+      
+      <div class="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+        <!-- Free tier -->
+        <div class="glass rounded-2xl p-8">
+          <h3 class="text-xl font-semibold mb-2">Free</h3>
+          <div class="text-3xl font-bold mb-4">$0</div>
+          <ul class="space-y-3 text-sm text-white/60 mb-6">
+            <li class="flex items-center gap-2">
+              <svg aria-hidden="true" class="w-4 h-4 text-green-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              5 saved clips
+            </li>
+            <li class="flex items-center gap-2">
+              <svg aria-hidden="true" class="w-4 h-4 text-green-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              Search through your clips
+            </li>
+            <li class="flex items-center gap-2">
+              <svg aria-hidden="true" class="w-4 h-4 text-green-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              Password manager protection
+            </li>
+            <li class="flex items-center gap-2">
+              <svg aria-hidden="true" class="w-4 h-4 text-green-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              Launch at login
+            </li>
+          </ul>
+          <a href="https://gumroad.com/l/pastetrail" class="block w-full py-3 rounded-lg border border-white/20 text-center text-white/80 hover:bg-white/5 transition-colors">
+            Download
+          </a>
+        </div>
+        
+        <!-- Standard tier -->
+        <div class="glass rounded-2xl p-8 border-2 border-ink-steel/50 relative">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-ink-steel text-ink-dark text-xs font-semibold rounded-full">
+            RECOMMENDED
+          </div>
+          <h3 class="text-xl font-semibold mb-2">Standard</h3>
+          <div class="text-3xl font-bold mb-4">$9.99&nbsp;<span class="text-sm font-normal text-white/40">one-time</span></div>
+          <ul class="space-y-3 text-sm text-white/60 mb-6">
+            <li class="flex items-center gap-2">
+              <svg aria-hidden="true" class="w-4 h-4 text-green-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              500 saved clips
+            </li>
+            <li class="flex items-center gap-2">
+              <svg aria-hidden="true" class="w-4 h-4 text-green-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              Everything in Free
+            </li>
+            <li class="flex items-center gap-2">
+              <svg aria-hidden="true" class="w-4 h-4 text-green-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+              Lifetime updates included
+            </li>
+          </ul>
+          <a href="https://gumroad.com/l/pastetrail" class="btn-primary block w-full py-3 rounded-lg text-center text-white font-medium">
+            Get Standard
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section id="faq" class="py-20">
+    <div class="max-w-2xl mx-auto px-6">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Frequently asked questions</h2>
+      </div>
+      
+      <div class="space-y-4">
+        <div class="glass rounded-xl p-6">
+          <h3 class="font-semibold mb-2">Which Mac models does this work on?</h3>
+          <p class="text-sm text-white/50">Any Mac running macOS 13 Ventura or later. That's most Macs from 2017 onward.</p>
+        </div>
+        
+        <div class="glass rounded-xl p-6">
+          <h3 class="font-semibold mb-2">Does it send my data anywhere?</h3>
+          <p class="text-sm text-white/50">No. Zero network calls. Your clipboard stays on your machine. Verified with Little Snitch — you can verify it yourself.</p>
+        </div>
+        
+        <div class="glass rounded-xl p-6">
+          <h3 class="font-semibold mb-2">What happens when I hit 5 clips (Free)?</h3>
+          <p class="text-sm text-white/50">The oldest clip gets deleted automatically. Upgrade to Standard for 500 clips and it stops happening.</p>
+        </div>
+        
+        <div class="glass rounded-xl p-6">
+          <h3 class="font-semibold mb-2">How do I upgrade?</h3>
+          <p class="text-sm text-white/50">Buy Standard on Gumroad, get your license key, paste it in Settings. Your clips stay safe — you just get more space.</p>
+        </div>
+        
+        <div class="glass rounded-xl p-6">
+          <h3 class="font-semibold mb-2">Will it capture my passwords?</h3>
+          <p class="text-sm text-white/50">No way. Paste Trail automatically ignores 1Password, Bitwarden, and Keychain. Those never make it into your history.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-12 border-t border-white/5">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-3">
+          <svg aria-hidden="true" class="w-6 h-6 text-ink-cream" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+            <path d="M9 4V3a1 1 0 0 1 2 0v1"/>
+          </svg>
+          <span class="font-semibold">Paste Trail</span>
+        </div>
+        
+        <nav class="flex items-center gap-6 text-sm text-white/40">
+          <a href="#" class="hover:text-white transition-colors">Privacy</a>
+          <a href="#" class="hover:text-white transition-colors">Support</a>
+          <a href="#" class="hover:text-white transition-colors">Terms</a>
+        </nav>
+        
+        <div class="text-sm text-white/30">
+          © 2026 Paste Trail. All rights reserved.
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

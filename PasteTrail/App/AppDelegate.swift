@@ -1,6 +1,7 @@
 // PasteTrail/App/AppDelegate.swift
 import AppKit
 import Combine
+import os
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
@@ -22,7 +23,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             clipStore = try ClipStore()
         } catch {
             // Storage failure is non-recoverable; log and continue without history
-            print("[PasteTrail] ClipStore init failed: \(error)")
+            os_log(.error, "ClipStore init failed: %{public}@", error.localizedDescription)
             do {
                 clipStore = try ClipStore(dbQueue: .init()) // in-memory fallback
             } catch {
@@ -55,6 +56,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             DispatchQueue.main.async { self?.menuBarController.togglePopover() }
         }
         keyboardShortcutManager.register()
+
+        // Propagate showMenuBarIcon changes to the status item
+        settingsStore.$showMenuBarIcon
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] visible in self?.menuBarController.setMenuBarIconVisible(visible) }
+            .store(in: &cancellables)
 
         // Propagate excludePasswordManagers changes to the monitor
         settingsStore.$excludePasswordManagers

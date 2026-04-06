@@ -9,6 +9,7 @@ struct ClipPopoverView: View {
 
     @State private var query = ""
     @State private var showSettings = false
+    @State private var isAccessibilityGranted = AXIsProcessTrusted()
 
     private var displayedClips: [ClipItem] {
         guard !query.isEmpty else { return clipStore.clips }
@@ -29,6 +30,7 @@ struct ClipPopoverView: View {
             }
         }
         .frame(width: 380)
+        .background(VisualEffectView(material: .hudWindow))
         .onReceive(NotificationCenter.default.publisher(for: .showSettings)) { _ in
             showSettings = true
         }
@@ -41,6 +43,11 @@ struct ClipPopoverView: View {
             header
             Divider().opacity(0.5)
 
+            if !isAccessibilityGranted {
+                accessibilityBanner
+                Divider().opacity(0.5)
+            }
+
             if displayedClips.isEmpty {
                 emptyState
             } else {
@@ -50,6 +57,42 @@ struct ClipPopoverView: View {
             if atCap { upgradeBanner }
             else     { footer }
         }
+        .onAppear { isAccessibilityGranted = AXIsProcessTrusted() }
+    }
+
+    // MARK: - Accessibility banner
+
+    private var accessibilityBanner: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "exclamationmark.shield")
+                .font(.system(size: 15))
+                .foregroundStyle(Color(hex: "#6D8196"))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Accessibility access needed")
+                    .font(.system(size: 12, weight: .semibold))
+                Text("Paste Trail can't paste until you grant access.")
+                    .font(.system(size: 11))
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Button("Open Settings") {
+                NSWorkspace.shared.open(
+                    URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!
+                )
+            }
+            .buttonStyle(.plain)
+            .font(.system(size: 11, weight: .semibold))
+            .padding(.horizontal, 9)
+            .padding(.vertical, 5)
+            .background(Color(hex: "#6D8196"), in: RoundedRectangle(cornerRadius: 6))
+            .foregroundStyle(.white)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(Color(hex: "#6D8196").opacity(0.08))
     }
 
     // MARK: - Header
@@ -246,16 +289,3 @@ private struct ClipRowView: View {
     }
 }
 
-// MARK: - Color hex helper
-
-private extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let r = Double((int >> 16) & 0xFF) / 255
-        let g = Double((int >>  8) & 0xFF) / 255
-        let b = Double(int & 0xFF) / 255
-        self.init(red: r, green: g, blue: b)
-    }
-}

@@ -8,24 +8,20 @@ enum GumroadError: Error {
 
 struct GumroadLicenseValidator {
 
-    static func validate(key: String) async throws {
+    static func validate(key: String, session: URLSession = .shared) async throws {
         var request = URLRequest(url: URL(string: "https://api.gumroad.com/v2/licenses/verify")!)
         request.httpMethod = "POST"
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         let body = "product_id=\(formEncode(GumroadProductID))&license_key=\(formEncode(key))"
         request.httpBody = body.data(using: .utf8)
 
-        let (data, _): (Data, URLResponse)
-        do {
-            (data, _) = try await URLSession.shared.data(for: request)
-        } catch {
-            throw GumroadError.networkError(error)
-        }
-
-        guard
-            let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-            let success = json["success"] as? Bool,
-            success
+        let (data, response) = try await session.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200,
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let success = json["success"] as? Bool,
+              success
         else {
             throw GumroadError.invalidKey
         }

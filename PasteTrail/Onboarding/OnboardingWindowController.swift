@@ -18,7 +18,7 @@ final class OnboardingWindowController: NSWindowController {
         let window = NSWindow(contentViewController: hosting)
         window.styleMask = [.titled, .closable]
         window.title = "Paste Trail"
-        window.setContentSize(NSSize(width: 380, height: 340))
+        window.setContentSize(NSSize(width: 380, height: 400))
         window.center()
         window.isReleasedWhenClosed = false
         self.window = window
@@ -74,7 +74,28 @@ private struct OnboardingView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
 
-            Spacer().frame(height: 28)
+            Spacer().frame(height: 18)
+
+            HStack(spacing: 6) {
+                Image(systemName: "keyboard")
+                    .font(.system(size: 12))
+                    .foregroundStyle(Color(hex: "#6D8196"))
+                Text("Once set up, press")
+                    .font(.system(size: 12))
+                    .foregroundStyle(.secondary)
+                Text("⌘ ⇧ V")
+                    .font(.system(size: 12, design: .monospaced))
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 2)
+                    .background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 4))
+                    .overlay(RoundedRectangle(cornerRadius: 4).stroke(.separator.opacity(0.5), lineWidth: 0.5))
+                Text("anywhere to open Paste Trail.")
+                    .font(.system(size: 12))
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.horizontal, 32)
+
+            Spacer().frame(height: 18)
 
             Button("Open System Settings → Privacy") {
                 NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!)
@@ -95,18 +116,7 @@ private struct OnboardingView: View {
 
             Spacer()
         }
-        .frame(width: 380, height: 340)
+        .frame(width: 380, height: 400)
     }
 }
 
-private extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let r = Double((int >> 16) & 0xFF) / 255
-        let g = Double((int >>  8) & 0xFF) / 255
-        let b = Double(int & 0xFF) / 255
-        self.init(red: r, green: g, blue: b)
-    }
-}
