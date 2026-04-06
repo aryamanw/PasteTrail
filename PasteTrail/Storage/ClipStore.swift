@@ -43,7 +43,9 @@ final class ClipStore: ObservableObject {
         migrator.registerMigration("v1") { db in
             try db.create(table: "clip_items", ifNotExists: true) { t in
                 t.column("id", .text).notNull().primaryKey()
+                t.column("contentType", .text).notNull().defaults(to: "text")
                 t.column("text", .text).notNull()
+                t.column("imagePath", .text)
                 t.column("sourceApp", .text).notNull()
                 t.column("timestamp", .datetime).notNull()
             }

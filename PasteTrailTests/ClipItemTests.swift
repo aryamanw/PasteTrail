@@ -15,7 +15,6 @@ final class ClipItemTests: XCTestCase {
                 t.column("imagePath", .text)
                 t.column("sourceApp", .text).notNull()
                 t.column("timestamp", .datetime).notNull()
-                t.column("isPinned", .boolean).notNull().defaults(to: false)
             }
         }
         let original = ClipItem(id: UUID(), text: "hello", sourceApp: "com.apple.Terminal", timestamp: Date(timeIntervalSince1970: 0))
@@ -38,7 +37,6 @@ final class ClipItemTests: XCTestCase {
         XCTAssertTrue(cols.contains("imagePath"))
         XCTAssertTrue(cols.contains("sourceApp"))
         XCTAssertTrue(cols.contains("timestamp"))
-        XCTAssertTrue(cols.contains("isPinned"))
     }
 
     func testImageClipItemFields() {

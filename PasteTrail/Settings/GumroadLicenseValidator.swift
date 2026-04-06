@@ -15,8 +15,13 @@ struct GumroadLicenseValidator {
         let body = "product_id=\(formEncode(GumroadProductID))&license_key=\(formEncode(key))"
         request.httpBody = body.data(using: .utf8)
 
-        let (data, response) = try await session.data(for: request)
-        
+        let (data, response): (Data, URLResponse)
+        do {
+            (data, response) = try await session.data(for: request)
+        } catch {
+            throw GumroadError.networkError(error)
+        }
+
         guard let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 200,
               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],

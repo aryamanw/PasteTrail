@@ -48,8 +48,8 @@ final class SettingsStore: ObservableObject {
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
-        isMonitoringEnabled = defaults.bool(forKey: Keys.isMonitoringEnabled)
-        excludePasswordManagers = defaults.bool(forKey: Keys.excludePasswordManagers)
+        isMonitoringEnabled = defaults.object(forKey: Keys.isMonitoringEnabled) as? Bool ?? true
+        excludePasswordManagers = defaults.object(forKey: Keys.excludePasswordManagers) as? Bool ?? true
         showMenuBarIcon = defaults.object(forKey: Keys.showMenuBarIcon) as? Bool ?? true
         launchAtLogin = defaults.bool(forKey: Keys.launchAtLogin)
 

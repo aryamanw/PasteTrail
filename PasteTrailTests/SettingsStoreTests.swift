@@ -12,6 +12,10 @@ final class SettingsStoreTests: XCTestCase {
         sut = SettingsStore(defaults: defaults)
     }
 
+    override func tearDown() {
+        sut.deactivateLicense()
+    }
+
     func testDefaultMonitoringIsEnabled() {
         XCTAssertTrue(sut.isMonitoringEnabled)
     }
