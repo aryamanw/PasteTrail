@@ -29,6 +29,7 @@
 		D1E2F3A4B5C6D7E8F9A0B1C2 /* OnboardingWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F4A5B6C7D8E9F0A1B2 /* OnboardingWindowController.swift */; };
 		B9C0D1E2F3A4B5C6D7E8F9A0 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B0C1D2E3F4A5B6C7D8E9F0 /* Color+Hex.swift */; };
 		E9F0A1B2C3D4E5F6A7B8C9D0 /* GumroadLicenseValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E0F1A2B3C4D5E6F7A8B9C0 /* GumroadLicenseValidatorTests.swift */; };
+		B3C4D5E6F7A8B9C0D1E2F3A4 /* KeychainHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F6A7B8C9D0E1F2A3B4 /* KeychainHelperTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +68,7 @@
 		C1D2E3F4A5B6C7D8E9F0A1B2 /* OnboardingWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWindowController.swift; sourceTree = "<group>"; };
 		A9B0C1D2E3F4A5B6C7D8E9F0 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		D9E0F1A2B3C4D5E6F7A8B9C0 /* GumroadLicenseValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GumroadLicenseValidatorTests.swift; sourceTree = "<group>"; };
+		C3D4E5F6A7B8C9D0E1F2A3B4 /* KeychainHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelperTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -188,6 +190,7 @@
 				DE4D5E6F7A8B9C0D1E2F3A4B /* ClipboardMonitorTests.swift */,
 				EA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift */,
 				D9E0F1A2B3C4D5E6F7A8B9C0 /* GumroadLicenseValidatorTests.swift */,
+			C3D4E5F6A7B8C9D0E1F2A3B4 /* KeychainHelperTests.swift */,
 			);
 			path = PasteTrailTests;
 			sourceTree = "<group>";
@@ -299,6 +302,7 @@
 				CD4D5E6F7A8B9C0D1E2F3A4B /* ClipboardMonitorTests.swift in Sources */,
 				FA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift in Sources */,
 				E9F0A1B2C3D4E5F6A7B8C9D0 /* GumroadLicenseValidatorTests.swift in Sources */,
+			B3C4D5E6F7A8B9C0D1E2F3A4 /* KeychainHelperTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -6,16 +6,16 @@
 
 ## 1. Fix the Build (Do This First)
 
-Two source files exist on disk but are not registered in `PasteTrail.xcodeproj`:
+✅ All four files are now registered in `PasteTrail.xcodeproj`:
 
-| File | Why it's needed |
+| File | Target |
 |---|---|
-| `PasteTrail/Settings/KeychainHelper.swift` | `SettingsStore` uses `KeychainHelper.shared` to store the license key |
-| `PasteTrail/Shared/VisualEffectView.swift` | `ClipPopoverView` uses `VisualEffectView` for the glassmorphism background |
+| `PasteTrail/Settings/KeychainHelper.swift` | PasteTrail |
+| `PasteTrail/Shared/VisualEffectView.swift` | PasteTrail |
+| `PasteTrailTests/GumroadLicenseValidatorTests.swift` | PasteTrailTests |
+| `PasteTrailTests/KeychainHelperTests.swift` | PasteTrailTests |
 
-**Fix:** In Xcode, right-click each file in the Project Navigator → **Add to Target → PasteTrail**. Build should succeed immediately after.
-
-Also add `PasteTrailTests/GumroadLicenseValidatorTests.swift` and `PasteTrailTests/KeychainHelperTests.swift` to the `PasteTrailTests` target the same way.
+Open `PasteTrail.xcodeproj` in Xcode and do a clean build (⇧⌘K then ⌘B) to confirm everything compiles.
 
 ---
 
