@@ -191,6 +191,7 @@ final class ClipStore: ObservableObject {
     /// The popover must be closed by the caller before this is invoked.
     func paste(_ item: ClipItem) {
         guard AXIsProcessTrusted() else { return }
+        
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
 
@@ -210,9 +211,9 @@ final class ClipStore: ObservableObject {
         monitor?.isPasting = true
 
         Task { @MainActor [weak self] in
-            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 s
+            try? await Task.sleep(nanoseconds: 50_000_000) // 50ms - reduced window
             self?.sendCommandV()
-            try? await Task.sleep(nanoseconds: 300_000_000) // 0.3 s
+            try? await Task.sleep(nanoseconds: 200_000_000) // 200ms
             self?.monitor?.isPasting = false
         }
     }

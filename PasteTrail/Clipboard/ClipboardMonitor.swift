@@ -31,7 +31,12 @@ final class ClipboardMonitor {
         "com.agilebits.onepassword7",
         "com.agilebits.onepassword-osx",
         "com.bitwarden.desktop",
-        "com.apple.keychainaccess"
+        "com.apple.keychainaccess",
+        "com.lastpass.LastPass",
+        "com.dashlane.dashlanephonefinal",
+        "com.enpass.Enpass",
+        "com.keepersecurity.keeper",
+        "com.nordpass.macos.NordPass"
     ]
 
     static func isExcluded(bundleID: String?) -> Bool {
