@@ -64,13 +64,12 @@ struct SettingsView: View {
                                 .font(.system(size: 13))
                             Spacer()
                             Text("⌘ ⇧ V")
-                                .font(.system(size: 12, design: .monospaced))
+                                .font(.system(size: 12))
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 3)
                                 .background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
                                 .overlay(RoundedRectangle(cornerRadius: 5).stroke(.separator.opacity(0.5), lineWidth: 0.5))
                         }
-                        .padding(.vertical, 0)
                         .frame(minHeight: 36)
                         .padding(.horizontal, 10)
                     }

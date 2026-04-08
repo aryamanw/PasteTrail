@@ -105,6 +105,44 @@
   [data-theme="light"] .mb-popup-item.destructive { color: #c0392b; }
   [data-theme="light"] .scene-title { color: rgba(0,0,0,0.35); }
   [data-theme="light"] .footer { color: var(--text-tertiary); }
+  [data-theme="light"] .undo-toast {
+    background: rgba(238,238,242,0.96);
+    border-color: rgba(0,0,0,0.10);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 0 0 0.5px rgba(0,0,0,0.06);
+  }
+  [data-theme="light"] .undo-progress { background: rgba(0,0,0,0.06); }
+  [data-theme="light"] .context-menu {
+    background: rgba(238,238,242,0.96);
+    border-color: rgba(0,0,0,0.10);
+    box-shadow: 0 0 0 0.5px rgba(0,0,0,0.08), 0 8px 28px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+  }
+  [data-theme="light"] .ctx-item { color: rgba(0,0,0,0.80); }
+  [data-theme="light"] .ctx-item.hover { background: rgba(109,129,150,0.14); }
+  [data-theme="light"] .ctx-sep { background: rgba(0,0,0,0.08); }
+  [data-theme="light"] .ctx-item.destructive { color: #c0392b; }
+  [data-theme="light"] .ctx-item.destructive .ctx-kbd { color: rgba(192,57,43,0.45); }
+  [data-theme="light"] .shortcuts-close {
+    background: rgba(0,0,0,0.05);
+    border-color: rgba(0,0,0,0.07);
+  }
+  [data-theme="light"] .shortcut-row { border-bottom-color: rgba(0,0,0,0.05); }
+  [data-theme="light"] .key {
+    background: rgba(0,0,0,0.06);
+    border-color: rgba(0,0,0,0.11);
+  }
+  [data-theme="light"] .confirm-cancel {
+    background: rgba(0,0,0,0.05);
+    border-color: rgba(0,0,0,0.09);
+  }
+  [data-theme="light"] .upgrade-text { color: rgba(0,0,0,0.55); }
+  [data-theme="light"] .upgrade-text strong { color: rgba(0,0,0,0.80); }
+  [data-theme="light"] .paste-toast {
+    background: rgba(238,238,242,0.96);
+    border-color: rgba(0,0,0,0.10);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  }
+  [data-theme="light"] .back-btn:hover,
+  [data-theme="light"] .secondary-btn:hover { background: rgba(0,0,0,0.05); }
 
   /* ── Theme toggle pill ── */
   .theme-toggle {
@@ -1114,7 +1152,7 @@
   .ctx-item.hover { background: rgba(109,129,150,0.20); }
   .ctx-kbd {
     font-size: 10.5px;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: -apple-system, sans-serif;
     color: var(--text-tertiary);
     letter-spacing: 0.02em;
     flex-shrink: 0;
@@ -1212,7 +1250,7 @@
   }
   .shortcut-keys { display: flex; gap: 3px; align-items: center; }
   .key {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: -apple-system, sans-serif;
     font-size: 10.5px;
     color: var(--text-primary);
     background: rgba(255,255,255,0.07);
