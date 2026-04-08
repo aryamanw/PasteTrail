@@ -1,6 +1,6 @@
 # Paste Trail — Next Steps
 
-> Current state: all core features implemented, two files unregistered in the Xcode project causing a build failure. Once that's fixed, the app is functionally complete for v0.1.
+> Current state: all core v0.1 features implemented + image clipboard support shipped. Two files are unregistered in the Xcode project — fix that first, then QA and release.
 
 ---
 
@@ -170,7 +170,7 @@ All boxes must be checked before any public announcement.
 
 Items explicitly deferred from v0.1, in rough priority order:
 
-1. **Image and file-path clip support** — the model and UI already handle text-only; extend `ClipboardMonitor` to capture `NSImage` and file URLs
+1. ~~**Image and file-path clip support**~~ — ✅ **Shipped.** `ClipboardMonitor` detects images, `ClipStore` stores them as TIFF files, `ClipPopoverView` renders thumbnails and async dimensions. (`d01efa4` – `4c929b8`)
 2. **Custom shortcut rebinding** — Settings UI has a display-only shortcut row; wire it up with a key recorder
 3. **Keyboard navigation in popover** — ↑/↓ arrows to move between clips, Enter to paste
 4. **Clip pinning / favourites** — add a `pinned Bool` column to `clip_items`
