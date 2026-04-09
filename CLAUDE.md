@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-**Paste Trail** is a macOS menu bar clipboard manager. Menu bar icon + global `⌘⇧V` shortcut opens a searchable popover of clipboard history stored locally in SQLite. Zero network calls after license activation.
+**Paste Trail** is a macOS menu bar clipboard manager. Menu bar icon + global `⌘⇧V` shortcut opens a searchable popover of clipboard history stored locally in SQLite. Zero network calls, zero telemetry.
 
 - **Language:** Swift 5.10
 - **UI:** SwiftUI + AppKit (`NSStatusItem`, `NSPopover`)
@@ -48,11 +48,11 @@ CGEventPost         ◀── ClipStore.paste(_:)
 | `App/PasteTrailApp.swift` | `@main`, wires `ObservableObject`s into environment |
 | `App/KeyboardShortcutManager.swift` | Carbon `RegisterEventHotKey` for global `⌘⇧V` |
 | `MenuBar/MenuBarController.swift` | `NSStatusItem` + `NSPopover`; icon state (active / paused). Uses AppKit directly instead of `MenuBarExtra` because `MenuBarExtra` doesn't support distinguishing left-click (popover) from right-click (context menu). |
-| `MenuBar/ClipPopoverView.swift` | Search field + scrollable clip list + upgrade banner |
+| `MenuBar/ClipPopoverView.swift` | Search field + scrollable clip list + footer row |
 | `Clipboard/ClipboardMonitor.swift` | 0.5s timer polling `NSPasteboard.changeCount`; bundle ID filter |
 | `Clipboard/ClipItem.swift` | Model: `UUID id`, `String text`, `String sourceApp`, `Date timestamp` |
 | `Storage/ClipStore.swift` | GRDB SQLite; rolling cap; exact-string dedup on most-recent only; fuzzy search |
-| `Settings/SettingsStore.swift` | `UserDefaults`; license state; `SMAppService` login item |
+| `Settings/SettingsStore.swift` | `UserDefaults`; `SMAppService` login item |
 | `Settings/SettingsView.swift` | Settings overlay (slides into popover) |
 
 ### Data model
@@ -127,7 +127,7 @@ com.apple.keychainaccess
 - Popover open: <100ms via keyboard shortcut
 - Search: real-time, no perceptible lag
 - Idle RAM: <50MB
-- Zero network calls (verifiable with Little Snitch) after license activation
+- Zero network calls at any time (verifiable with Little Snitch)
 
 ---
 
