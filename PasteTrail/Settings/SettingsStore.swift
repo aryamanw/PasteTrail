@@ -27,23 +27,16 @@ final class SettingsStore: ObservableObject {
         }
     }
 
-    @Published private(set) var isUnlocked: Bool
-    @Published private(set) var licenseKey: String?
-    @Published private(set) var licenseActivatedAt: Date?
-
     // MARK: - Init
 
     private let defaults: UserDefaults
-    private let keychain = KeychainHelper.shared
     private var isApplyingLoginItem = false
 
     private enum Keys {
-        static let isMonitoringEnabled      = "isMonitoringEnabled"
-        static let excludePasswordManagers  = "excludePasswordManagers"
-        static let showMenuBarIcon          = "showMenuBarIcon"
-        static let launchAtLogin            = "launchAtLogin"
-        static let licenseKey               = "licenseKey"
-        static let licenseActivatedAt       = "licenseActivatedAt"
+        static let isMonitoringEnabled     = "isMonitoringEnabled"
+        static let excludePasswordManagers = "excludePasswordManagers"
+        static let showMenuBarIcon         = "showMenuBarIcon"
+        static let launchAtLogin           = "launchAtLogin"
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -52,38 +45,6 @@ final class SettingsStore: ObservableObject {
         excludePasswordManagers = defaults.object(forKey: Keys.excludePasswordManagers) as? Bool ?? true
         showMenuBarIcon = defaults.object(forKey: Keys.showMenuBarIcon) as? Bool ?? true
         launchAtLogin = defaults.bool(forKey: Keys.launchAtLogin)
-
-        if (try? keychain.readString(forKey: Keys.licenseKey)) != nil {
-            licenseKey = "***REDACTED***"
-            isUnlocked = true
-        } else {
-            licenseKey = nil
-            isUnlocked = false
-        }
-
-        licenseActivatedAt = defaults.object(forKey: Keys.licenseActivatedAt) as? Date
-    }
-
-    // MARK: - License
-
-    func activateLicense(key: String, activatedAt: Date) {
-        do {
-            try keychain.save(key, forKey: Keys.licenseKey)
-        } catch {
-            os_log(.error, "Failed to save license key to Keychain: %{public}@", error.localizedDescription)
-        }
-        defaults.set(activatedAt, forKey: Keys.licenseActivatedAt)
-        licenseKey = "***REDACTED***"
-        licenseActivatedAt = activatedAt
-        isUnlocked = true
-    }
-
-    func deactivateLicense() {
-        try? keychain.delete(forKey: Keys.licenseKey)
-        defaults.removeObject(forKey: Keys.licenseActivatedAt)
-        licenseKey = nil
-        licenseActivatedAt = nil
-        isUnlocked = false
     }
 
     // MARK: - Login item
