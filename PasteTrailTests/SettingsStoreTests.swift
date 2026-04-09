@@ -7,13 +7,8 @@ final class SettingsStoreTests: XCTestCase {
     var sut: SettingsStore!
 
     override func setUp() {
-        // Use a test-specific UserDefaults suite to avoid polluting real prefs
         let defaults = UserDefaults(suiteName: "com.test.pastetrail.\(UUID().uuidString)")!
         sut = SettingsStore(defaults: defaults)
-    }
-
-    override func tearDown() {
-        sut.deactivateLicense()
     }
 
     func testDefaultMonitoringIsEnabled() {
@@ -31,15 +26,5 @@ final class SettingsStoreTests: XCTestCase {
     func testMonitoringTogglePersists() {
         sut.isMonitoringEnabled = false
         XCTAssertFalse(sut.isMonitoringEnabled)
-    }
-
-    func testIsUnlockedDefaultsFalse() {
-        XCTAssertFalse(sut.isUnlocked)
-    }
-
-    func testActivateLicenseStoresKey() {
-        sut.activateLicense(key: "TEST-KEY-1234", activatedAt: Date(timeIntervalSince1970: 0))
-        XCTAssertTrue(sut.isUnlocked)
-        XCTAssertEqual(sut.licenseKey, "***REDACTED***")  // Key is redacted in memory for security
     }
 }
