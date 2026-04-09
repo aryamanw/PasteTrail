@@ -45,14 +45,15 @@ final class ClipStoreTests: XCTestCase {
         XCTAssertEqual(store.clips[0].text, "hello")
     }
 
-    func testFreeCapEnforced() throws {
+    func testCapEnforced() throws {
         let store = try makeInMemoryStore()
-        for i in 0..<7 {
-            let item = ClipItem(id: UUID(), text: "clip \(i)", sourceApp: "com.test", timestamp: Date(timeIntervalSince1970: Double(i)))
-            try store.insert(item, cap: ClipStore.freeCap)
+        for i in 0..<(ClipStore.cap + 3) {
+            let item = ClipItem(id: UUID(), text: "clip \(i)", sourceApp: "com.test",
+                                timestamp: Date(timeIntervalSince1970: Double(i)))
+            try store.insert(item)
         }
-        XCTAssertEqual(store.clips.count, ClipStore.freeCap)
-        XCTAssertEqual(store.clips[0].text, "clip 6")
+        XCTAssertEqual(store.clips.count, ClipStore.cap)
+        XCTAssertEqual(store.clips[0].text, "clip \(ClipStore.cap + 2)")
     }
 
     func testDedupSkipsConsecutiveDuplicate() throws {
@@ -111,16 +112,6 @@ final class ClipStoreTests: XCTestCase {
         XCTAssertEqual(results.count, 1)
     }
 
-    func testPaidCapEnforced() throws {
-        let store = try makeInMemoryStore()
-        for i in 0..<502 {
-            let item = ClipItem(id: UUID(), text: "clip \(i)", sourceApp: "com.test", timestamp: Date(timeIntervalSince1970: Double(i)))
-            try store.insert(item, cap: ClipStore.paidCap)
-        }
-        XCTAssertEqual(store.clips.count, ClipStore.paidCap)
-        XCTAssertEqual(store.clips[0].text, "clip 501")
-    }
-
     // MARK: - Helpers
 
     private func makePNGData() -> Data {
@@ -164,19 +155,19 @@ final class ClipStoreTests: XCTestCase {
             sourceApp: "com.test",
             timestamp: Date(timeIntervalSince1970: 0) // oldest
         )
-        try store.insertImage(capture, cap: ClipStore.freeCap)
+        try store.insertImage(capture, cap: ClipStore.cap)
         let imageFileURL = store.imagesDirectory.appendingPathComponent("\(imageID.uuidString).png")
         XCTAssertTrue(FileManager.default.fileExists(atPath: imageFileURL.path))
 
         // Push image out of the cap with newer text clips
-        for i in 1...ClipStore.freeCap {
+        for i in 1...ClipStore.cap {
             let item = ClipItem(id: UUID(), text: "clip \(i)", sourceApp: "com.test",
                                 timestamp: Date(timeIntervalSince1970: Double(i)))
-            try store.insert(item, cap: ClipStore.freeCap)
+            try store.insert(item, cap: ClipStore.cap)
         }
 
         XCTAssertFalse(FileManager.default.fileExists(atPath: imageFileURL.path))
-        XCTAssertEqual(store.clips.count, ClipStore.freeCap)
+        XCTAssertEqual(store.clips.count, ClipStore.cap)
     }
 
     func testSearchReturnsImageClipsBySourceAppBundleID() throws {
