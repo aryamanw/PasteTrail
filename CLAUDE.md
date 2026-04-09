@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **UI:** SwiftUI + AppKit (`NSStatusItem`, `NSPopover`)
 - **Storage:** SQLite via GRDB.swift (Swift Package Manager)
 - **Min OS:** macOS 13 Ventura
-- **Distribution:** Open source; Homebrew tap (`brew tap aryaman/pastetrail && brew install pastetrail`); no Apple Developer account required (unsigned, compiled from source)
+- **Distribution:** Open source; Homebrew tap (`brew tap aryamanw/pastetrail && brew install pastetrail`); no Apple Developer account required (unsigned, compiled from source)
 
 ---
 

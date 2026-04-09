@@ -5,7 +5,7 @@ A lightweight macOS menu bar clipboard manager. Stores the last 20 clips locally
 ## Install
 
 ```bash
-brew tap aryaman/pastetrail
+brew tap aryamanw/pastetrail
 brew install pastetrail
 ```
 
@@ -28,7 +28,7 @@ Then move the app to your Applications folder (shown in the post-install message
 ## Build from source
 
 ```bash
-git clone https://github.com/aryaman/pastetrail.git
+git clone https://github.com/aryamanw/PasteTrail.git
 cd pastetrail
 xcodebuild -scheme PasteTrail -configuration Release -destination 'platform=macOS' build
 ```
