@@ -8,28 +8,27 @@
 
 /* Begin PBXBuildFile section */
 		300A18C1F8DC01A7A3BC6AF7 /* PasteTrailApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7244886155DCA5C9CA0AFA2C /* PasteTrailApp.swift */; };
-		A0B1C2D3E4F5A6B7C8D9E0F1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E1 /* AppDelegate.swift */; };
-		B7C8D9E0F1A2B3C4D5E6F7A8 /* KeyboardShortcutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D8E9F0A1B2C3D4E5F6A7B8 /* KeyboardShortcutManager.swift */; };
-		CC1D2E3F4A5B6C7D8E9F0A1B /* ClipItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2E3F4A5B6C7D8E9F0A1B2C /* ClipItem.swift */; };
 		4673660780E494BA4809D9AF /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 74A497C742B168F3C440812C /* GRDB */; };
-		EF9C684BF2C85EC511AAFD4E /* PasteTrailTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E162C2987F588DB2A6786AD1 /* PasteTrailTests.swift */; };
-		AA1B2C3D4E5F6A7B8C9D0E1F /* ClipItemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2C3D4E5F6A7B8C9D0E1F2A /* ClipItemTests.swift */; };
-		FF1A2B3C4D5E6F7A8B9C0D1E /* ClipStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE1A2B3C4D5E6F7A8B9C0D1E /* ClipStore.swift */; };
-		FF2B3C4D5E6F7A8B9C0D1E2F /* ClipStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE2B3C4D5E6F7A8B9C0D1E2F /* ClipStoreTests.swift */; };
-		AB3C4D5E6F7A8B9C0D1E2F3A /* ClipboardMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3C4D5E6F7A8B9C0D1E2F3A /* ClipboardMonitor.swift */; };
-		CD4D5E6F7A8B9C0D1E2F3A4B /* ClipboardMonitorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4D5E6F7A8B9C0D1E2F3A4B /* ClipboardMonitorTests.swift */; };
-		EF5E6F7A8B9C0D1E2F3A4B5C /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE5E6F7A8B9C0D1E2F3A4B5C /* SettingsStore.swift */; };
-		A5B6C7D8E9F0A1B2C3D4E5F6 /* KeychainHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5C6D7E8F9A0B1C2D3E4F5A6 /* KeychainHelper.swift */; };
-		C6D7E8F9A0B1C2D3E4F5A6B7 /* VisualEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6E7F8A9B0C1D2E3F4A5B6C7 /* VisualEffectView.swift */; };
-		A36F7A8B9C0D1E2F3A4B5C6D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B36F7A8B9C0D1E2F3A4B5C6D /* SettingsView.swift */; };
-		A46F7A8B9C0D1E2F3A4B5C6D /* GumroadLicenseValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46F7A8B9C0D1E2F3A4B5C6D /* GumroadLicenseValidator.swift */; };
-		FA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift */; };
+		A0B1C2D3E4F5A6B7C8D9E0F1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F6A7B8C9D0E1 /* AppDelegate.swift */; };
 		A1B2C3D4E5F6A7B8C9D0E1F2 /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5A6B7C8D9E0F1A2 /* MenuBarController.swift */; };
 		A2B3C4D5E6F7A8B9C0D1E2F3 /* ClipPopoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A7B8C9D0E1F2A3 /* ClipPopoverView.swift */; };
-		D1E2F3A4B5C6D7E8F9A0B1C2 /* OnboardingWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F4A5B6C7D8E9F0A1B2 /* OnboardingWindowController.swift */; };
-		B9C0D1E2F3A4B5C6D7E8F9A0 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B0C1D2E3F4A5B6C7D8E9F0 /* Color+Hex.swift */; };
-		E9F0A1B2C3D4E5F6A7B8C9D0 /* GumroadLicenseValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E0F1A2B3C4D5E6F7A8B9C0 /* GumroadLicenseValidatorTests.swift */; };
+		A36F7A8B9C0D1E2F3A4B5C6D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B36F7A8B9C0D1E2F3A4B5C6D /* SettingsView.swift */; };
+
+		AA1B2C3D4E5F6A7B8C9D0E1F /* ClipItemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB2C3D4E5F6A7B8C9D0E1F2A /* ClipItemTests.swift */; };
+		AB3C4D5E6F7A8B9C0D1E2F3A /* ClipboardMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC3C4D5E6F7A8B9C0D1E2F3A /* ClipboardMonitor.swift */; };
 		B3C4D5E6F7A8B9C0D1E2F3A4 /* KeychainHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F6A7B8C9D0E1F2A3B4 /* KeychainHelperTests.swift */; };
+		B7C8D9E0F1A2B3C4D5E6F7A8 /* KeyboardShortcutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7D8E9F0A1B2C3D4E5F6A7B8 /* KeyboardShortcutManager.swift */; };
+		B9C0D1E2F3A4B5C6D7E8F9A0 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B0C1D2E3F4A5B6C7D8E9F0 /* Color+Hex.swift */; };
+		C6D7E8F9A0B1C2D3E4F5A6B7 /* VisualEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6E7F8A9B0C1D2E3F4A5B6C7 /* VisualEffectView.swift */; };
+		CC1D2E3F4A5B6C7D8E9F0A1B /* ClipItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2E3F4A5B6C7D8E9F0A1B2C /* ClipItem.swift */; };
+		CD4D5E6F7A8B9C0D1E2F3A4B /* ClipboardMonitorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE4D5E6F7A8B9C0D1E2F3A4B /* ClipboardMonitorTests.swift */; };
+		D1E2F3A4B5C6D7E8F9A0B1C2 /* OnboardingWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D2E3F4A5B6C7D8E9F0A1B2 /* OnboardingWindowController.swift */; };
+		E9F0A1B2C3D4E5F6A7B8C9D0 /* GumroadLicenseValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E0F1A2B3C4D5E6F7A8B9C0 /* GumroadLicenseValidatorTests.swift */; };
+		EF5E6F7A8B9C0D1E2F3A4B5C /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE5E6F7A8B9C0D1E2F3A4B5C /* SettingsStore.swift */; };
+		EF9C684BF2C85EC511AAFD4E /* PasteTrailTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E162C2987F588DB2A6786AD1 /* PasteTrailTests.swift */; };
+		FA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift */; };
+		FF1A2B3C4D5E6F7A8B9C0D1E /* ClipStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE1A2B3C4D5E6F7A8B9C0D1E /* ClipStore.swift */; };
+		FF2B3C4D5E6F7A8B9C0D1E2F /* ClipStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE2B3C4D5E6F7A8B9C0D1E2F /* ClipStoreTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,27 +47,26 @@
 		4C7D6EBAD11C68D82A8E33BB /* PasteTrail.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PasteTrail.entitlements; sourceTree = "<group>"; };
 		4CD9E7CA61B3D57B64825BCA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		7244886155DCA5C9CA0AFA2C /* PasteTrailApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteTrailApp.swift; sourceTree = "<group>"; };
-		F0A1B2C3D4E5F6A7B8C9D0E1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		C7D8E9F0A1B2C3D4E5F6A7B8 /* KeyboardShortcutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutManager.swift; sourceTree = "<group>"; };
-		DD2E3F4A5B6C7D8E9F0A1B2C /* ClipItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipItem.swift; sourceTree = "<group>"; };
-		E162C2987F588DB2A6786AD1 /* PasteTrailTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteTrailTests.swift; sourceTree = "<group>"; };
-		BB2C3D4E5F6A7B8C9D0E1F2A /* ClipItemTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipItemTests.swift; sourceTree = "<group>"; };
-		EE1A2B3C4D5E6F7A8B9C0D1E /* ClipStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipStore.swift; sourceTree = "<group>"; };
-		EE2B3C4D5E6F7A8B9C0D1E2F /* ClipStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipStoreTests.swift; sourceTree = "<group>"; };
-		BC3C4D5E6F7A8B9C0D1E2F3A /* ClipboardMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardMonitor.swift; sourceTree = "<group>"; };
-		DE4D5E6F7A8B9C0D1E2F3A4B /* ClipboardMonitorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardMonitorTests.swift; sourceTree = "<group>"; };
-		FE5E6F7A8B9C0D1E2F3A4B5C /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
-		B5C6D7E8F9A0B1C2D3E4F5A6 /* KeychainHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelper.swift; sourceTree = "<group>"; };
-		D6E7F8A9B0C1D2E3F4A5B6C7 /* VisualEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualEffectView.swift; sourceTree = "<group>"; };
-		B36F7A8B9C0D1E2F3A4B5C6D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		B46F7A8B9C0D1E2F3A4B5C6D /* GumroadLicenseValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GumroadLicenseValidator.swift; sourceTree = "<group>"; };
-		EA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStoreTests.swift; sourceTree = "<group>"; };
+		A9B0C1D2E3F4A5B6C7D8E9F0 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		B1C2D3E4F5A6B7C8D9E0F1A2 /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarController.swift; sourceTree = "<group>"; };
 		B2C3D4E5F6A7B8C9D0E1F2A3 /* ClipPopoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipPopoverView.swift; sourceTree = "<group>"; };
+		B36F7A8B9C0D1E2F3A4B5C6D /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+
+		BB2C3D4E5F6A7B8C9D0E1F2A /* ClipItemTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipItemTests.swift; sourceTree = "<group>"; };
+		BC3C4D5E6F7A8B9C0D1E2F3A /* ClipboardMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardMonitor.swift; sourceTree = "<group>"; };
 		C1D2E3F4A5B6C7D8E9F0A1B2 /* OnboardingWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWindowController.swift; sourceTree = "<group>"; };
-		A9B0C1D2E3F4A5B6C7D8E9F0 /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
-		D9E0F1A2B3C4D5E6F7A8B9C0 /* GumroadLicenseValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GumroadLicenseValidatorTests.swift; sourceTree = "<group>"; };
 		C3D4E5F6A7B8C9D0E1F2A3B4 /* KeychainHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainHelperTests.swift; sourceTree = "<group>"; };
+		C7D8E9F0A1B2C3D4E5F6A7B8 /* KeyboardShortcutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardShortcutManager.swift; sourceTree = "<group>"; };
+		D6E7F8A9B0C1D2E3F4A5B6C7 /* VisualEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualEffectView.swift; sourceTree = "<group>"; };
+		D9E0F1A2B3C4D5E6F7A8B9C0 /* GumroadLicenseValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GumroadLicenseValidatorTests.swift; sourceTree = "<group>"; };
+		DD2E3F4A5B6C7D8E9F0A1B2C /* ClipItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipItem.swift; sourceTree = "<group>"; };
+		DE4D5E6F7A8B9C0D1E2F3A4B /* ClipboardMonitorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardMonitorTests.swift; sourceTree = "<group>"; };
+		E162C2987F588DB2A6786AD1 /* PasteTrailTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasteTrailTests.swift; sourceTree = "<group>"; };
+		EA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStoreTests.swift; sourceTree = "<group>"; };
+		EE1A2B3C4D5E6F7A8B9C0D1E /* ClipStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipStore.swift; sourceTree = "<group>"; };
+		EE2B3C4D5E6F7A8B9C0D1E2F /* ClipStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipStoreTests.swift; sourceTree = "<group>"; };
+		F0A1B2C3D4E5F6A7B8C9D0E1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		FE5E6F7A8B9C0D1E2F3A4B5C /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +81,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8DA5BF45B231423D9E1D43EAF9FFE524 /* MenuBar */ = {
+			isa = PBXGroup;
+			children = (
+				B1C2D3E4F5A6B7C8D9E0F1A2 /* MenuBarController.swift */,
+				B2C3D4E5F6A7B8C9D0E1F2A3 /* ClipPopoverView.swift */,
+			);
+			path = MenuBar;
+			sourceTree = "<group>";
+		};
 		918B28D58BA8388541985525 /* App */ = {
 			isa = PBXGroup;
 			children = (
@@ -93,60 +100,6 @@
 			path = App;
 			sourceTree = "<group>";
 		};
-		EE3F4A5B6C7D8E9F0A1B2C3D /* Clipboard */ = {
-			isa = PBXGroup;
-			children = (
-				DD2E3F4A5B6C7D8E9F0A1B2C /* ClipItem.swift */,
-				BC3C4D5E6F7A8B9C0D1E2F3A /* ClipboardMonitor.swift */,
-			);
-			path = Clipboard;
-			sourceTree = "<group>";
-		};
-		FF3C4D5E6F7A8B9C0D1E2F3A /* Storage */ = {
-			isa = PBXGroup;
-			children = (
-				EE1A2B3C4D5E6F7A8B9C0D1E /* ClipStore.swift */,
-			);
-			path = Storage;
-			sourceTree = "<group>";
-		};
-		AB5E6F7A8B9C0D1E2F3A4B5C /* Settings */ = {
-			isa = PBXGroup;
-			children = (
-				FE5E6F7A8B9C0D1E2F3A4B5C /* SettingsStore.swift */,
-				B5C6D7E8F9A0B1C2D3E4F5A6 /* KeychainHelper.swift */,
-				B36F7A8B9C0D1E2F3A4B5C6D /* SettingsView.swift */,
-				B46F7A8B9C0D1E2F3A4B5C6D /* GumroadLicenseValidator.swift */,
-			);
-			path = Settings;
-			sourceTree = "<group>";
-		};
-		8DA5BF45B231423D9E1D43EAF9FFE524 /* MenuBar */ = {
-			isa = PBXGroup;
-			children = (
-				B1C2D3E4F5A6B7C8D9E0F1A2 /* MenuBarController.swift */,
-				B2C3D4E5F6A7B8C9D0E1F2A3 /* ClipPopoverView.swift */,
-			);
-			path = MenuBar;
-			sourceTree = "<group>";
-		};
-		E2F3A4B5C6D7E8F9A0B1C2D3 /* Onboarding */ = {
-			isa = PBXGroup;
-			children = (
-				C1D2E3F4A5B6C7D8E9F0A1B2 /* OnboardingWindowController.swift */,
-			);
-			path = Onboarding;
-			sourceTree = "<group>";
-		};
-		C9D0E1F2A3B4C5D6E7F8A9B0 /* Shared */ = {
-			isa = PBXGroup;
-			children = (
-				A9B0C1D2E3F4A5B6C7D8E9F0 /* Color+Hex.swift */,
-				D6E7F8A9B0C1D2E3F4A5B6C7 /* VisualEffectView.swift */,
-			);
-			path = Shared;
-			sourceTree = "<group>";
-		};
 		9BF19718F712254CF541B4F6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -154,6 +107,15 @@
 				03BCA2E11FD56802119B4B4E /* PasteTrailTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		AB5E6F7A8B9C0D1E2F3A4B5C /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				FE5E6F7A8B9C0D1E2F3A4B5C /* SettingsStore.swift */,
+				B36F7A8B9C0D1E2F3A4B5C6D /* SettingsView.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		ABD5396D7131B50F7339C50E /* PasteTrail */ = {
@@ -181,6 +143,15 @@
 			);
 			sourceTree = "<group>";
 		};
+		C9D0E1F2A3B4C5D6E7F8A9B0 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				A9B0C1D2E3F4A5B6C7D8E9F0 /* Color+Hex.swift */,
+				D6E7F8A9B0C1D2E3F4A5B6C7 /* VisualEffectView.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
 		DAE062261A0838980F835702 /* PasteTrailTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -190,9 +161,34 @@
 				DE4D5E6F7A8B9C0D1E2F3A4B /* ClipboardMonitorTests.swift */,
 				EA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift */,
 				D9E0F1A2B3C4D5E6F7A8B9C0 /* GumroadLicenseValidatorTests.swift */,
-			C3D4E5F6A7B8C9D0E1F2A3B4 /* KeychainHelperTests.swift */,
+				C3D4E5F6A7B8C9D0E1F2A3B4 /* KeychainHelperTests.swift */,
 			);
 			path = PasteTrailTests;
+			sourceTree = "<group>";
+		};
+		E2F3A4B5C6D7E8F9A0B1C2D3 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				C1D2E3F4A5B6C7D8E9F0A1B2 /* OnboardingWindowController.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		EE3F4A5B6C7D8E9F0A1B2C3D /* Clipboard */ = {
+			isa = PBXGroup;
+			children = (
+				DD2E3F4A5B6C7D8E9F0A1B2C /* ClipItem.swift */,
+				BC3C4D5E6F7A8B9C0D1E2F3A /* ClipboardMonitor.swift */,
+			);
+			path = Clipboard;
+			sourceTree = "<group>";
+		};
+		FF3C4D5E6F7A8B9C0D1E2F3A /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				EE1A2B3C4D5E6F7A8B9C0D1E /* ClipStore.swift */,
+			);
+			path = Storage;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -243,8 +239,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
-				TargetAttributes = {
-				};
 			};
 			buildConfigurationList = 16EEC156C10EE06533AA0CB6 /* Build configuration list for PBXProject "PasteTrail" */;
 			developmentRegion = en;
@@ -256,7 +250,7 @@
 			mainGroup = C86EB3C618C514E0170C7AD2;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				A2AB53D5388816343FEB32B5 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
+				A2AB53D5388816343FEB32B5 /* XCRemoteSwiftPackageReference "GRDB" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9BF19718F712254CF541B4F6 /* Products */;
@@ -281,9 +275,7 @@
 				FF1A2B3C4D5E6F7A8B9C0D1E /* ClipStore.swift in Sources */,
 				AB3C4D5E6F7A8B9C0D1E2F3A /* ClipboardMonitor.swift in Sources */,
 				EF5E6F7A8B9C0D1E2F3A4B5C /* SettingsStore.swift in Sources */,
-				A5B6C7D8E9F0A1B2C3D4E5F6 /* KeychainHelper.swift in Sources */,
 				A36F7A8B9C0D1E2F3A4B5C6D /* SettingsView.swift in Sources */,
-				A46F7A8B9C0D1E2F3A4B5C6D /* GumroadLicenseValidator.swift in Sources */,
 				A1B2C3D4E5F6A7B8C9D0E1F2 /* MenuBarController.swift in Sources */,
 				A2B3C4D5E6F7A8B9C0D1E2F3 /* ClipPopoverView.swift in Sources */,
 				D1E2F3A4B5C6D7E8F9A0B1C2 /* OnboardingWindowController.swift in Sources */,
@@ -302,7 +294,7 @@
 				CD4D5E6F7A8B9C0D1E2F3A4B /* ClipboardMonitorTests.swift in Sources */,
 				FA6F7A8B9C0D1E2F3A4B5C6D /* SettingsStoreTests.swift in Sources */,
 				E9F0A1B2C3D4E5F6A7B8C9D0 /* GumroadLicenseValidatorTests.swift in Sources */,
-			B3C4D5E6F7A8B9C0D1E2F3A4 /* KeychainHelperTests.swift in Sources */,
+				B3C4D5E6F7A8B9C0D1E2F3A4 /* KeychainHelperTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -443,9 +435,11 @@
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_ENTITLEMENTS = PasteTrail/PasteTrail.entitlements;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = NF2TNPUH38;
 				INFOPLIST_FILE = PasteTrail/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -453,6 +447,7 @@
 				);
 				MARKETING_VERSION = 0.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.pastetrail;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.10;
 			};
@@ -464,14 +459,17 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = NF2TNPUH38;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.10;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PasteTrail.app/Contents/MacOS/PasteTrail";
@@ -484,14 +482,17 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = NF2TNPUH38;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.10;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PasteTrail.app/Contents/MacOS/PasteTrail";
@@ -505,9 +506,11 @@
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGNING_REQUIRED = NO;
 				CODE_SIGN_ENTITLEMENTS = PasteTrail/PasteTrail.entitlements;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = NF2TNPUH38;
 				INFOPLIST_FILE = PasteTrail/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -515,6 +518,7 @@
 				);
 				MARKETING_VERSION = 0.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = app.pastetrail;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.10;
 			};
@@ -553,7 +557,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		A2AB53D5388816343FEB32B5 /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
+		A2AB53D5388816343FEB32B5 /* XCRemoteSwiftPackageReference "GRDB" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/groue/GRDB.swift";
 			requirement = {
@@ -566,7 +570,7 @@
 /* Begin XCSwiftPackageProductDependency section */
 		74A497C742B168F3C440812C /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = A2AB53D5388816343FEB32B5 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			package = A2AB53D5388816343FEB32B5 /* XCRemoteSwiftPackageReference "GRDB" */;
 			productName = GRDB;
 		};
 /* End XCSwiftPackageProductDependency section */
