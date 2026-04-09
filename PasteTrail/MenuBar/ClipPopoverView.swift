@@ -18,10 +18,6 @@ struct ClipPopoverView: View {
         return (try? clipStore.search(query)) ?? []
     }
 
-    private var atCap: Bool {
-        !settingsStore.isUnlocked && clipStore.clips.count >= ClipStore.freeCap
-    }
-
     var body: some View {
         VStack(spacing: 0) {
             if showSettings {
@@ -56,8 +52,7 @@ struct ClipPopoverView: View {
                 clipList
             }
 
-            if atCap { upgradeBanner }
-            else     { footer }
+            footer
         }
         .onAppear {
             isAccessibilityGranted = AXIsProcessTrusted()
@@ -192,44 +187,6 @@ struct ClipPopoverView: View {
             .frame(maxWidth: .infinity, minHeight: 160)
     }
 
-    // MARK: - Upgrade banner
-
-    private var upgradeBanner: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("You've saved \(ClipStore.freeCap) clips")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(.primary)
-                Text("Upgrade for 500 — $9.99 once")
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
-            }
-            Spacer()
-            Button("Upgrade →") {
-                NSWorkspace.shared.open(URL(string: "https://pastetrail.gumroad.com")!)
-            }
-            .buttonStyle(.plain)
-            .font(.system(size: 11, weight: .semibold))
-            .padding(.horizontal, 10)
-            .padding(.vertical, 5)
-            .background(
-                LinearGradient(colors: [Color(hex: "#6D8196"), Color(hex: "#4a6070")],
-                               startPoint: .topLeading, endPoint: .bottomTrailing),
-                in: RoundedRectangle(cornerRadius: 7)
-            )
-            .foregroundStyle(.white)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .background(
-            LinearGradient(stops: [
-                .init(color: Color(hex: "#6D8196").opacity(0.3), location: 0.17),
-                .init(color: Color(hex: "#4A4A4A").opacity(0.45), location: 0.22)
-            ], startPoint: .topLeading, endPoint: .bottomTrailing)
-        )
-        .overlay(Divider().opacity(0.4), alignment: .top)
-    }
-
     // MARK: - Footer
 
     private var footer: some View {
@@ -242,10 +199,8 @@ struct ClipPopoverView: View {
     }
 
     private var footerText: String {
-        let total = clipStore.clips.count
-        let cap   = settingsStore.isUnlocked ? ClipStore.paidCap : ClipStore.freeCap
         if query.isEmpty {
-            return "\(total) of \(cap) clips"
+            return "\(clipStore.clips.count) of \(ClipStore.cap) clips"
         }
         let count = displayedClips.count
         return count == 1 ? "1 result" : "\(count) results"
