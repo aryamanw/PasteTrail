@@ -1,52 +1,44 @@
 # Paste Trail
 
-A lightweight macOS menu bar clipboard manager. Stores clipboard history locally in SQLite, accessible via a global `⌘⇧V` keyboard shortcut. Zero network calls after license activation.
+A lightweight macOS menu bar clipboard manager. Stores the last 20 clips locally in SQLite, accessible via a global `⌘⇧V` keyboard shortcut. Open source, no account required, zero telemetry.
+
+## Install
+
+```bash
+brew tap aryaman/pastetrail
+brew install pastetrail
+```
+
+Then move the app to your Applications folder (shown in the post-install message) and grant Accessibility access on first launch.
+
+**Requirements:** macOS 13 Ventura or later · Xcode (installed via `xcode-select --install` is not enough — full Xcode required to build)
 
 ## Features
 
-- **Clipboard history** — automatically captures text you copy, every 500ms
+- **Clipboard history** — captures text and images you copy, every 500ms, up to 20 clips
 - **Global shortcut** — press `⌘⇧V` from any app to open the popover
-- **Instant search** — real-time filter across your clip history
+- **Instant search** — real-time filter across clip history
 - **Click to paste** — select any clip to paste it into the active app via synthetic `⌘V`
 - **Privacy-first** — all data stored locally in SQLite, no cloud sync, zero telemetry
-- **Password manager exclusion** — automatically skips clips from 1Password, Bitwarden, and Keychain Access
-- **Launch at login** — optional, via native `SMAppService`
-- **License activation** — one-time Gumroad license key stored securely in Keychain
+- **Password manager exclusion** — skips clips from 1Password, Bitwarden, and Keychain Access
+- **Image support** — captures screenshots and image copies as thumbnails
+- **Launch at login** — optional, via `SMAppService`
 - **Menu bar icon** — left-click opens the popover; right-click shows a context menu
 
-## Tiers
-
-| | Free | Standard ($9.99 one-time) |
-|---|---|---|
-| Clip history | 5 clips | 500 clips |
-| Search | Yes | Yes |
-| Password exclusion | Yes | Yes |
-| Launch at login | Yes | Yes |
-
-Standard tier unlocked via Gumroad license key. One network call at activation, zero network calls thereafter. License key stored in Keychain (not UserDefaults).
-
-## Requirements
-
-- macOS 13 Ventura or later
-- Xcode 15+
-- Accessibility permission (required for synthetic `⌘V` paste into other apps)
-
-## Build
+## Build from source
 
 ```bash
-# Build
-xcodebuild -scheme PasteTrail -destination 'platform=macOS' build
-
-# Run all tests
-xcodebuild -scheme PasteTrailTests -destination 'platform=macOS' test
-
-# Run a single test class
-xcodebuild -scheme PasteTrailTests -destination 'platform=macOS' -only-testing:PasteTrailTests/ClipStoreTests test
+git clone https://github.com/aryaman/pastetrail.git
+cd pastetrail
+xcodebuild -scheme PasteTrail -configuration Release -destination 'platform=macOS' build
 ```
 
-Or open `PasteTrail.xcodeproj` in Xcode and run the `PasteTrail` scheme.
+Or open `PasteTrail.xcodeproj` in Xcode 15+ and run the `PasteTrail` scheme.
 
-> **Note:** `PasteTrail/Settings/KeychainHelper.swift` and `PasteTrail/Shared/VisualEffectView.swift` must be added to the Xcode project target manually (right-click in Project Navigator → Add to Target → PasteTrail) if they are not already included.
+```bash
+# Run tests
+xcodebuild -scheme PasteTrailTests -destination 'platform=macOS' test
+```
 
 ## Architecture
 
@@ -54,41 +46,27 @@ Or open `PasteTrail.xcodeproj` in Xcode and run the `PasteTrail` scheme.
 NSPasteboard       ──▶ ClipboardMonitor ──PassthroughSubject<ClipItem>──▶ ClipStore
 Carbon EventHotKey ──▶ KeyboardShortcutManager ──toggle popover──▶ MenuBarController
 SMAppService       ──▶ SettingsStore (login item)
-CGEventPost        ◀── ClipStore.paste(_:)   (synthetic ⌘V to frontmost app)
+CGEventPost        ◀── ClipStore.paste(_:)
 ```
 
 | Component | File | Responsibility |
 |---|---|---|
 | `ClipboardMonitor` | `Clipboard/ClipboardMonitor.swift` | Polls `NSPasteboard` every 0.5s; filters password managers by bundle ID |
-| `ClipStore` | `Storage/ClipStore.swift` | GRDB SQLite; rolling cap; exact-string dedup on most-recent clip; fuzzy search; paste action |
+| `ClipStore` | `Storage/ClipStore.swift` | GRDB SQLite; 20-clip rolling cap; dedup; fuzzy search; paste action |
 | `MenuBarController` | `MenuBar/MenuBarController.swift` | `NSStatusItem` + `NSPopover` (left-click) + `NSMenu` (right-click) |
 | `KeyboardShortcutManager` | `App/KeyboardShortcutManager.swift` | Carbon `RegisterEventHotKey` for global `⌘⇧V` |
-| `SettingsStore` | `Settings/SettingsStore.swift` | UserDefaults persistence; Keychain license storage; `SMAppService` login item |
-| `KeychainHelper` | `Settings/KeychainHelper.swift` | Thin wrapper over Security framework for Keychain read/write/delete |
-| `VisualEffectView` | `Shared/VisualEffectView.swift` | `NSViewRepresentable` wrapper for `NSVisualEffectView` glassmorphism background |
-| `OnboardingWindowController` | `Onboarding/OnboardingWindowController.swift` | First-launch Accessibility permission flow (real `NSWindow`, not popover) |
-
-### Data model
-
-```swift
-struct ClipItem: Identifiable, Codable, FetchableRecord, PersistableRecord {
-    var id: UUID
-    var text: String
-    var sourceApp: String   // bundle ID; resolved to display name via NSWorkspace at render time
-    var timestamp: Date
-}
-```
-
-SQLite table: `clip_items`. Rolling delete: when inserting beyond cap, oldest clips by `timestamp` are removed first.
+| `SettingsStore` | `Settings/SettingsStore.swift` | UserDefaults persistence; `SMAppService` login item |
 
 ## Dependencies
 
 | Package | Purpose |
 |---|---|
-| [GRDB.swift](https://github.com/groue/GRDB.swift) | SQLite ORM (via Swift Package Manager) |
+| [GRDB.swift](https://github.com/groue/GRDB.swift) | SQLite ORM (Swift Package Manager) |
 
-No other third-party dependencies.
+## Contributing
+
+Issues and pull requests welcome. Please open an issue before starting significant work.
 
 ## License
 
-Proprietary. All rights reserved.
+MIT — see [LICENSE](LICENSE).

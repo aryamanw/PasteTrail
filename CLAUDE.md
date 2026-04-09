@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **UI:** SwiftUI + AppKit (`NSStatusItem`, `NSPopover`)
 - **Storage:** SQLite via GRDB.swift (Swift Package Manager)
 - **Min OS:** macOS 13 Ventura
-- **Distribution:** Gumroad direct download (v0.1); App Store pathway preserved from day one
+- **Distribution:** Open source; Homebrew tap (`brew tap aryaman/pastetrail && brew install pastetrail`); no Apple Developer account required (unsigned, compiled from source)
 
 ---
 
@@ -68,11 +68,10 @@ struct ClipItem: Identifiable, Codable, FetchableRecord, PersistableRecord {
 
 SQLite table: `clip_items`. Rolling delete: when inserting beyond cap, delete oldest by `timestamp`.
 
-### Tier caps
+### Clip cap
 
-- **Free:** 5 clips
-- **Standard ($9.99 one-time):** 500 clips — unlocked by Gumroad license key (one POST to Gumroad API on activation; zero network calls thereafter)
-- License key + `activatedAt` stored in `UserDefaults` (not Keychain for v0.1)
+- **20 clips**, rolling window — oldest clip evicted when cap is exceeded
+- No paid tiers, no licensing
 
 ---
 
