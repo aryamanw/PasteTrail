@@ -451,11 +451,19 @@
               <div class="code-block rounded-xl p-4 font-mono text-sm space-y-2">
                 <div class="flex items-center gap-3">
                   <span class="text-ink-steel select-none">$</span>
-                  <span class="text-ink-cream">brew tap aryamanw/pastetrail</span>
+                  <span class="flex-1 text-ink-cream">brew tap aryamanw/pastetrail</span>
+                  <button onclick="copyCmd(this, 'brew tap aryamanw/pastetrail')" class="copy-btn ml-auto flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/10 transition-colors" aria-label="Copy command">
+                    <svg class="copy-icon w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="8" height="8" rx="1.5"/><path d="M3 11V3h8"/></svg>
+                    <svg class="check-icon w-3.5 h-3.5 hidden" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 8 6 12 14 4"/></svg>
+                  </button>
                 </div>
                 <div class="flex items-center gap-3">
                   <span class="text-ink-steel select-none">$</span>
-                  <span class="text-ink-cream">brew install pastetrail</span>
+                  <span class="flex-1 text-ink-cream">brew install pastetrail</span>
+                  <button onclick="copyCmd(this, 'brew install pastetrail')" class="copy-btn ml-auto flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/10 transition-colors" aria-label="Copy command">
+                    <svg class="copy-icon w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="8" height="8" rx="1.5"/><path d="M3 11V3h8"/></svg>
+                    <svg class="check-icon w-3.5 h-3.5 hidden" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 8 6 12 14 4"/></svg>
+                  </button>
                 </div>
               </div>
             </div>
@@ -471,7 +479,11 @@
               <div class="code-block rounded-xl p-4 font-mono text-sm">
                 <div class="flex items-center gap-3">
                   <span class="text-ink-steel select-none">$</span>
-                  <span class="text-ink-cream">cp -r $(brew --prefix)/opt/pastetrail/PasteTrail.app /Applications/</span>
+                  <span class="flex-1 text-ink-cream">cp -r $(brew --prefix)/opt/pastetrail/PasteTrail.app /Applications/</span>
+                  <button onclick="copyCmd(this, 'cp -r $(brew --prefix)/opt/pastetrail/PasteTrail.app /Applications/')" class="copy-btn ml-auto flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/10 transition-colors" aria-label="Copy command">
+                    <svg class="copy-icon w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="8" height="8" rx="1.5"/><path d="M3 11V3h8"/></svg>
+                    <svg class="check-icon w-3.5 h-3.5 hidden" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 8 6 12 14 4"/></svg>
+                  </button>
                 </div>
               </div>
             </div>
@@ -571,5 +583,21 @@
       </div>
     </div>
   </footer>
+  <script>
+    function copyCmd(btn, text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const copy = btn.querySelector('.copy-icon');
+        const check = btn.querySelector('.check-icon');
+        copy.classList.add('hidden');
+        check.classList.remove('hidden');
+        btn.classList.add('text-green-400');
+        setTimeout(() => {
+          check.classList.add('hidden');
+          copy.classList.remove('hidden');
+          btn.classList.remove('text-green-400');
+        }, 1500);
+      });
+    }
+  </script>
 </body>
 </html>
