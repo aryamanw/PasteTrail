@@ -16,8 +16,7 @@ final class ClipStore: ObservableObject {
     let imagesDirectory: URL
     private var cancellables = Set<AnyCancellable>()
 
-    static let freeCap  = 5
-    static let paidCap  = 500
+    static let cap = 20
 
     // MARK: - Init
 
@@ -78,7 +77,7 @@ final class ClipStore: ObservableObject {
         if item.contentType == .text, let latest = clips.first,
            latest.contentType == .text, latest.text == item.text { return }
 
-        let effectiveCap = cap ?? currentCap
+        let effectiveCap = cap ?? ClipStore.cap
         try dbQueue.write { db in
             try item.insert(db)
             // Enforce rolling cap: delete oldest entries beyond the limit
@@ -113,7 +112,7 @@ final class ClipStore: ObservableObject {
             timestamp: capture.timestamp
         )
 
-        let effectiveCap = cap ?? currentCap
+        let effectiveCap = cap ?? ClipStore.cap
         try dbQueue.write { db in
             try item.insert(db)
             let total = try ClipItem.fetchCount(db)
@@ -140,12 +139,6 @@ final class ClipStore: ObservableObject {
         guard item.contentType == .image, let filename = item.imagePath else { return }
         let fileURL = imagesDirectory.appendingPathComponent(filename)
         try? FileManager.default.removeItem(at: fileURL)
-    }
-
-    weak var settingsStore: SettingsStore?
-
-    var currentCap: Int {
-        (settingsStore?.isUnlocked == true) ? ClipStore.paidCap : ClipStore.freeCap
     }
 
     // MARK: - Search

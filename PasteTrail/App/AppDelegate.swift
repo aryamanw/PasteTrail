@@ -31,8 +31,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 fatalError("[PasteTrail] Failed to create in-memory ClipStore: \(error)")
             }
         }
-        clipStore.settingsStore = settingsStore
-
         // Clipboard monitor → ClipStore pipeline
         clipboardMonitor = ClipboardMonitor()
         clipboardMonitor.excludePasswordManagers = settingsStore.excludePasswordManagers
