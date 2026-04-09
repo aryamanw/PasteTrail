@@ -211,7 +211,7 @@ final class ClipStore: ObservableObject {
         monitor?.isPasting = true
 
         Task { @MainActor [weak self] in
-            try? await Task.sleep(nanoseconds: 50_000_000) // 50ms - reduced window
+            try? await Task.sleep(nanoseconds: 350_000_000) // 350ms — wait for popover close animation + focus transfer
             self?.sendCommandV()
             try? await Task.sleep(nanoseconds: 200_000_000) // 200ms
             self?.monitor?.isPasting = false

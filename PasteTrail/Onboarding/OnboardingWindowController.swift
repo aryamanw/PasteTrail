@@ -117,6 +117,9 @@ private struct OnboardingView: View {
             Spacer()
         }
         .frame(width: 380, height: 400)
+        .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
+            if AXIsProcessTrusted() { onDismiss() }
+        }
     }
 }
 

@@ -1,6 +1,7 @@
 // PasteTrail/MenuBar/ClipPopoverView.swift
 import SwiftUI
 import AppKit
+import Combine
 
 struct ClipPopoverView: View {
 
@@ -10,6 +11,7 @@ struct ClipPopoverView: View {
     @State private var query = ""
     @State private var showSettings = false
     @State private var isAccessibilityGranted = AXIsProcessTrusted()
+    @StateObject private var nav = KeyNav()
 
     private var displayedClips: [ClipItem] {
         guard !query.isEmpty else { return clipStore.clips }
@@ -57,7 +59,29 @@ struct ClipPopoverView: View {
             if atCap { upgradeBanner }
             else     { footer }
         }
-        .onAppear { isAccessibilityGranted = AXIsProcessTrusted() }
+        .onAppear {
+            isAccessibilityGranted = AXIsProcessTrusted()
+            nav.itemCount = displayedClips.count
+            nav.start()
+        }
+        .onDisappear {
+            nav.stop()
+            nav.selectedIndex = nil
+        }
+        .onChange(of: query, perform: { _ in
+            nav.selectedIndex = nil
+            nav.itemCount = displayedClips.count
+        })
+        .onChange(of: clipStore.clips.count, perform: { _ in
+            nav.itemCount = displayedClips.count
+        })
+        .onReceive(nav.confirmSignal) { _ in
+            guard let idx = nav.selectedIndex, idx < displayedClips.count else { return }
+            closeAndPaste(displayedClips[idx])
+        }
+        .onReceive(Timer.publish(every: 2, on: .main, in: .common).autoconnect()) { _ in
+            if !isAccessibilityGranted { isAccessibilityGranted = AXIsProcessTrusted() }
+        }
     }
 
     // MARK: - Accessibility banner
@@ -139,17 +163,24 @@ struct ClipPopoverView: View {
     // MARK: - Clip list
 
     private var clipList: some View {
-        ScrollView {
-            LazyVStack(spacing: 2) {
-                ForEach(displayedClips) { clip in
-                    ClipRowView(clip: clip, imagesDirectory: clipStore.imagesDirectory) {
-                        closeAndPaste(clip)
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 2) {
+                    ForEach(Array(displayedClips.enumerated()), id: \.element.id) { idx, clip in
+                        ClipRowView(clip: clip, imagesDirectory: clipStore.imagesDirectory,
+                                    isSelected: nav.selectedIndex == idx) {
+                            closeAndPaste(clip)
+                        }
                     }
                 }
+                .padding(8)
             }
-            .padding(8)
+            .frame(maxHeight: 360)
+            .onChange(of: nav.selectedIndex, perform: { newIdx in
+                guard let i = newIdx, i < displayedClips.count else { return }
+                proxy.scrollTo(displayedClips[i].id)
+            })
         }
-        .frame(maxHeight: 360)
     }
 
     // MARK: - Empty state
@@ -236,10 +267,12 @@ private struct ClipRowView: View {
 
     let clip: ClipItem
     let imagesDirectory: URL
+    let isSelected: Bool
     let onTap: () -> Void
 
     @State private var isHovered = false
     @State private var imageDimensions: String?
+    @State private var thumbnail: NSImage?
 
     private var sourceAppName: String {
         guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: clip.sourceApp),
@@ -259,7 +292,9 @@ private struct ClipRowView: View {
                     mainContent
 
                     HStack(spacing: 5) {
-                        Text(clip.timestamp, style: .relative)
+                        TimelineView(.periodic(from: .now, by: 60)) { context in
+                            Text(timeAgoString(from: clip.timestamp, relativeTo: context.date))
+                        }
                         Circle().frame(width: 2, height: 2).foregroundStyle(.quaternary)
                         Text(sourceAppName)
                     }
@@ -273,17 +308,32 @@ private struct ClipRowView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .background(isHovered ? Color(hex: "#6D8196").opacity(0.10) : .clear,
-                    in: RoundedRectangle(cornerRadius: 9))
+        .background(
+            (isSelected ? Color(hex: "#6D8196").opacity(0.22) : (isHovered ? Color(hex: "#6D8196").opacity(0.10) : .clear)),
+            in: RoundedRectangle(cornerRadius: 9)
+        )
+        .overlay(alignment: .leading) {
+            if isSelected {
+                LinearGradient(
+                    colors: [Color(hex: "#FFFFE3"), Color(hex: "#6D8196")],
+                    startPoint: .top, endPoint: .bottom
+                )
+                .frame(width: 2)
+                .clipShape(RoundedRectangle(cornerRadius: 1))
+                .padding(.vertical, 4)
+            }
+        }
         .onHover { isHovered = $0 }
         .task(id: clip.id) {
-            guard clip.contentType == .image, imageDimensions == nil,
+            guard clip.contentType == .image, thumbnail == nil,
                   let filename = clip.imagePath else { return }
             let fileURL = imagesDirectory.appendingPathComponent(filename)
-            let size = await Task.detached(priority: .background) {
-                NSImage(contentsOf: fileURL)?.size
+            let loaded = await Task.detached(priority: .background) {
+                NSImage(contentsOf: fileURL)
             }.value
-            if let size {
+            if let loaded {
+                thumbnail = loaded
+                let size = loaded.size
                 imageDimensions = "\(Int(size.width)) × \(Int(size.height))"
             }
         }
@@ -304,19 +354,12 @@ private struct ClipRowView: View {
                         .foregroundStyle(.secondary)
                 )
         case .image:
-            if let filename = clip.imagePath {
-                AsyncImage(url: imagesDirectory.appendingPathComponent(filename)) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 28, height: 28)
-                            .clipShape(RoundedRectangle(cornerRadius: 7))
-                    default:
-                        imagePlaceholderBadge
-                    }
-                }
+            if let thumbnail {
+                Image(nsImage: thumbnail)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 28, height: 28)
+                    .clipShape(RoundedRectangle(cornerRadius: 7))
             } else {
                 imagePlaceholderBadge
             }
@@ -350,6 +393,67 @@ private struct ClipRowView: View {
                 .font(.system(size: 12.5, design: .monospaced))
                 .lineLimit(1)
                 .foregroundStyle(.primary)
+        }
+    }
+
+    // MARK: - Time formatting
+
+    private func timeAgoString(from date: Date, relativeTo now: Date) -> String {
+        let elapsed = now.timeIntervalSince(date)
+        if elapsed < 60 {
+            return "Less than a minute ago"
+        } else if elapsed < 3600 {
+            let minutes = Int(elapsed / 60)
+            return minutes == 1 ? "1 minute ago" : "\(minutes) minutes ago"
+        } else {
+            let hours = Int(elapsed / 3600)
+            return hours == 1 ? "1 hour ago" : "\(hours) hours ago"
+        }
+    }
+}
+
+// MARK: - Keyboard navigation
+
+private final class KeyNav: ObservableObject {
+
+    @Published var selectedIndex: Int? = nil
+    let confirmSignal = PassthroughSubject<Void, Never>()
+    var itemCount: Int = 0
+
+    private var token: Any?
+
+    func start() {
+        guard token == nil else { return }
+        token = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+            self?.handle(event: event) ?? event
+        }
+    }
+
+    func stop() {
+        if let t = token { NSEvent.removeMonitor(t); token = nil }
+    }
+
+    deinit { stop() }
+
+    private func handle(event: NSEvent) -> NSEvent? {
+        switch event.keyCode {
+        case 125: // down arrow
+            guard itemCount > 0 else { return event }
+            selectedIndex = min((selectedIndex ?? -1) + 1, itemCount - 1)
+            return nil
+        case 126: // up arrow
+            guard let cur = selectedIndex else { return event }
+            selectedIndex = cur > 0 ? cur - 1 : nil
+            return nil
+        case 53: // Escape — deselect without consuming (let NSPopover close)
+            if selectedIndex != nil { selectedIndex = nil; return nil }
+            return event
+        case 36, 76: // Return / numpad Enter
+            guard selectedIndex != nil else { return event }
+            confirmSignal.send()
+            return nil
+        default:
+            return event
         }
     }
 }
