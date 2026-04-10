@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paste Trail — Clipboard History for Mac</title>
+  <meta name="description" content="Free, open-source clipboard manager for Mac. Keeps your last 20 clips. Install in seconds with Homebrew. Zero telemetry.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://cdn.tailwindcss.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: {
+              charcoal: '#4A4A4A',
+              silver: '#CBCBCB',
+              cream: '#FFFFE3',
+              steel: '#6D8196',
+              dark: '#1a1a28',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'SF Mono', 'monospace'],
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-out',
+            'slide-up': 'slideUp 0.5s ease-out',
+            'pulse-soft': 'pulseSoft 2s infinite',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            pulseSoft: {
+              '0%, 100%': { opacity: '1' },
+              '50%': { opacity: '0.7' },
+            },
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    :root {
+      --ink-charcoal: #4A4A4A;
+      --ink-silver: #CBCBCB;
+      --ink-cream: #FFFFE3;
+      --ink-steel: #6D8196;
+      --ink-steel-10: rgba(109,129,150,0.10);
+      --ink-steel-22: rgba(109,129,150,0.22);
+      --popover-bg: rgba(28, 28, 32, 0.82);
+      --text-primary: rgba(255,255,255,0.90);
+      --text-secondary: rgba(255,255,255,0.55);
+    }
+
+    .glass {
+      background: rgba(28, 28, 32, 0.8);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .glass-light {
+      background: rgba(240, 240, 245, 0.85);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .text-gradient {
+      background: linear-gradient(135deg, #FFFFE3 0%, #6D8196 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6D8196 0%, #4a6070 100%);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(109,129,150,0.4);
+    }
+
+    .feature-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+    }
+
+    .code-block {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    /* Focus styles */
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--ink-cream);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      html {
+        scroll-behavior: auto;
+      }
+    }
+
+    /* Smooth scroll */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(109,129,150,0.3);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(109,129,150,0.5);
+    }
+  </style>
+</head>
+<body class="bg-ink-dark text-white font-sans antialiased">
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-ink-cream focus:text-ink-dark focus:font-medium">Skip to content</a>
+  <!-- Header -->
+  <header class="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <svg aria-hidden="true" class="w-8 h-8 text-ink-cream" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+          <path d="M9 4V3a1 1 0 0 1 2 0v1"/>
+          <line x1="9" y1="10" x2="15" y2="10"/>
+          <line x1="9" y1="14" x2="15" y2="14"/>
+          <line x1="9" y1="18" x2="12" y2="18"/>
+        </svg>
+        <span class="text-lg font-semibold tracking-tight">Paste Trail</span>
+      </div>
+
+      <nav aria-label="Primary" class="hidden md:flex items-center gap-8">
+        <a href="#features" class="text-white/60 hover:text-white transition-colors">Features</a>
+        <a href="#install" class="text-white/60 hover:text-white transition-colors">Install</a>
+        <a href="#faq" class="text-white/60 hover:text-white transition-colors">FAQ</a>
+      </nav>
+
+      <div class="flex items-center gap-4">
+        <a href="https://github.com/aryamanw/PasteTrail" class="btn-primary px-5 py-2 rounded-lg text-sm font-medium text-white flex items-center gap-2">
+          <svg aria-hidden="true" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+          </svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="main" class="pt-24 relative overflow-hidden">
+    <!-- Background gradients -->
+    <div class="absolute inset-0 pointer-events-none">
+      <div class="absolute top-0 left-1/4 w-96 h-96 bg-ink-steel/10 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-ink-steel/10 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-6 py-12 md:py-20">
+      <div class="grid md:grid-cols-2 gap-12 items-center">
+        <!-- Left: Text content -->
+        <div class="animate-fade-in">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ink-steel/10 border border-ink-steel/20 text-ink-cream text-sm mb-6">
+            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse-soft"></span>
+            Free &amp; Open Source · macOS&nbsp;13+
+          </div>
+
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+            Everything you copy,<br>
+            <span class="text-gradient">always within reach.</span>
+          </h1>
+
+          <p class="text-lg text-white/60 mb-8 max-w-lg">
+            The clipboard manager that just works. Keeps your last 20 clips,
+            search anything instantly, paste with a keystroke. Your data stays on your Mac — always.
+          </p>
+
+          <div class="flex flex-col sm:flex-row gap-4">
+            <a href="#install" class="btn-primary px-6 py-3 rounded-lg text-base font-semibold text-white text-center">
+              Install with Homebrew
+            </a>
+            <a href="https://github.com/aryamanw/PasteTrail" class="px-6 py-3 rounded-lg text-base font-medium text-white/60 hover:text-white transition-colors text-center border border-white/10 hover:border-white/20 flex items-center justify-center gap-2">
+              <svg aria-hidden="true" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+              </svg>
+              View Source
+            </a>
+          </div>
+
+          <div class="mt-8 flex items-center gap-4 text-sm text-white/40">
+            <span class="flex items-center gap-1"><kbd style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-size:11px;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-bottom-width:2px;color:rgba(255,255,255,0.55);line-height:1.4;">⌘</kbd><kbd style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-size:11px;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-bottom-width:2px;color:rgba(255,255,255,0.55);line-height:1.4;">⇧</kbd><kbd style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-size:11px;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-bottom-width:2px;color:rgba(255,255,255,0.55);line-height:1.4;">V</kbd></span>
+            <span>Global&nbsp;shortcut</span>
+            <span class="mx-2">•</span>
+            <span>20&nbsp;clips</span>
+            <span class="mx-2">•</span>
+            <span>Zero&nbsp;network&nbsp;calls</span>
+          </div>
+        </div>
+
+        <!-- Right: Device mockup -->
+        <div class="animate-slide-up" style="animation-delay: 0.2s;">
+          <div class="relative">
+            <!-- macOS window frame -->
+            <div class="glass rounded-2xl p-1 shadow-2xl">
+              <div class="rounded-xl overflow-hidden bg-ink-dark/90 border border-white/10">
+                <!-- Fake menu bar -->
+                <div class="h-6 bg-[#1a1a28] flex items-center px-3 gap-2 border-b border-white/5">
+                  <div class="w-2.5 h-2.5 rounded-full bg-red-500/60"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/60"></div>
+                  <div class="w-2.5 h-2.5 rounded-full bg-green-500/60"></div>
+                  <span class="ml-2 text-[10px] text-white/30">Finder</span>
+                </div>
+
+                <!-- Popover UI -->
+                <div class="p-2">
+                  <div class="glass rounded-xl overflow-hidden" style="width: 320px; margin: 0 auto;">
+                    <!-- Header -->
+                    <div class="h-10 flex items-center gap-2 px-3 border-b border-white/5">
+                      <div class="flex-1 h-6 rounded-md bg-white/5 flex items-center px-2">
+                        <svg aria-hidden="true" class="w-3.5 h-3.5 text-white/30" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                          <circle cx="6.5" cy="6.5" r="4.5"/>
+                          <path d="M10 10l3.5 3.5"/>
+                        </svg>
+                        <span class="ml-2 text-xs text-white/30">Search clips…</span>
+                      </div>
+                      <button aria-label="Settings" class="w-7 h-7 rounded-md bg-white/5 flex items-center justify-center">
+                        <svg aria-hidden="true" class="w-3.5 h-3.5 text-white/40" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+                          <circle cx="8" cy="8" r="2.5"/>
+                          <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.42 1.42M11.53 11.53l1.42 1.42M3.05 12.95l1.42-1.42M11.53 4.47l1.42-1.42"/>
+                        </svg>
+                      </button>
+                    </div>
+
+                    <!-- Clip list -->
+                    <div class="p-2 space-y-1">
+                      <div class="flex items-start gap-2 p-2 rounded-lg bg-ink-steel/20 cursor-pointer">
+                        <div class="w-7 h-7 rounded-md bg-white/5 flex items-center justify-center flex-shrink-0">
+                          <svg aria-hidden="true" class="w-3.5 h-3.5 text-white/40" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4">
+                            <path d="M2 3h10M2 6h7M2 9h5"/>
+                          </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                          <div class="text-xs font-mono text-white/80 truncate">Meeting notes from Tuesday</div>
+                          <div class="text-[10px] text-white/40 mt-0.5">2s ago · Notes</div>
+                        </div>
+                      </div>
+
+                      <div class="flex items-start gap-2 p-2 rounded-lg hover:bg-white/5 cursor-pointer">
+                        <div class="w-7 h-7 rounded-md bg-white/5 flex items-center justify-center flex-shrink-0">
+                          <svg aria-hidden="true" class="w-3.5 h-3.5 text-white/40" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4">
+                            <path d="M2 3h10M2 6h7M2 9h5"/>
+                          </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                          <div class="text-xs font-mono text-white/60 truncate">https://example.com/article</div>
+                          <div class="text-[10px] text-white/30 mt-0.5">1m ago · Safari</div>
+                        </div>
+                      </div>
+
+                      <div class="flex items-start gap-2 p-2 rounded-lg hover:bg-white/5 cursor-pointer">
+                        <div class="w-7 h-7 rounded-md bg-white/5 flex items-center justify-center flex-shrink-0">
+                          <svg aria-hidden="true" class="w-3.5 h-3.5 text-white/40" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4">
+                            <path d="M2 3h10M2 6h7M2 9h5"/>
+                          </svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                          <div class="text-xs font-mono text-white/60 truncate">Recipe for chocolate cake</div>
+                          <div class="text-[10px] text-white/30 mt-0.5">3m ago · Mail</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="h-6 flex items-center justify-center border-t border-white/5">
+                      <span class="text-[10px] text-white/30">3 of 20 clips</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Floating badge -->
+            <div class="absolute -right-4 top-1/2 glass px-3 py-2 rounded-lg -translate-y-1/2 flex items-center gap-1.5">
+              <span class="text-xs text-white/50">Press</span>
+              <kbd style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-size:12px;padding:2px 6px;border-radius:5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-bottom-width:2px;color:#FFFFE3;line-height:1.4;">⌘</kbd>
+              <kbd style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-size:12px;padding:2px 6px;border-radius:5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-bottom-width:2px;color:#FFFFE3;line-height:1.4;">⇧</kbd>
+              <kbd style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-size:12px;padding:2px 6px;border-radius:5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-bottom-width:2px;color:#FFFFE3;line-height:1.4;">V</kbd>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="py-20 bg-black/20">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Why you'll love it</h2>
+        <p class="text-white/60 max-w-2xl mx-auto">
+          Simple tools that just work. No setup, no learning curve.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Feature 1 -->
+        <div class="feature-card glass rounded-xl p-6">
+          <div class="w-12 h-12 rounded-xl bg-ink-steel/20 flex items-center justify-center mb-4">
+            <svg aria-hidden="true" class="w-6 h-6 text-ink-cream" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <path d="M6 8h.01M10 8h.01M6 12l4 4m0-4l-4 4"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Press ⌘⇧V to open</h3>
+          <p class="text-sm text-white/50">
+            Global keyboard shortcut opens your history from any app. Works everywhere.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="feature-card glass rounded-xl p-6">
+          <div class="w-12 h-12 rounded-xl bg-ink-steel/20 flex items-center justify-center mb-4">
+            <svg aria-hidden="true" class="w-6 h-6 text-ink-cream" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              <polyline points="7.5 4.21 12 6.81 16.5 4.21"/>
+              <polyline points="7.5 19.79 7.5 14.6 3 12"/>
+              <polyline points="21 12 16.5 14.6 16.5 19.79"/>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+              <line x1="12" y1="22.08" x2="12" y2="12"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">20-clip rolling history</h3>
+          <p class="text-sm text-white/50">
+            Stores your last 20 clipboard entries. Oldest drops off automatically as you copy new things.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="feature-card glass rounded-xl p-6">
+          <div class="w-12 h-12 rounded-xl bg-ink-steel/20 flex items-center justify-center mb-4">
+            <svg aria-hidden="true" class="w-6 h-6 text-ink-cream" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Private by default</h3>
+          <p class="text-sm text-white/50">
+            Your clipboard data never leaves your Mac. Not once. Not ever. Verified with Little Snitch — you can check yourself.
+          </p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="feature-card glass rounded-xl p-6">
+          <div class="w-12 h-12 rounded-xl bg-ink-steel/20 flex items-center justify-center mb-4">
+            <svg aria-hidden="true" class="w-6 h-6 text-ink-cream" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Passwords stay safe</h3>
+          <p class="text-sm text-white/50">
+            Automatically excludes 1Password, Bitwarden, and Keychain entries from your history.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="py-20">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">How it works</h2>
+        <p class="text-white/60">
+          Three simple steps to never lose a clipboard item again.
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="w-16 h-16 rounded-2xl bg-ink-steel/20 flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-ink-cream">1</div>
+          <h3 class="text-lg font-semibold mb-2">Install with Homebrew</h3>
+          <p class="text-sm text-white/50">Two commands in Terminal and Paste Trail is compiled and ready in your Applications folder.</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 rounded-2xl bg-ink-steel/20 flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-ink-cream">2</div>
+          <h3 class="text-lg font-semibold mb-2">Allow access</h3>
+          <p class="text-sm text-white/50">One quick permission for Accessibility (so it can paste into other apps).</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 rounded-2xl bg-ink-steel/20 flex items-center justify-center mx-auto mb-4 text-2xl font-bold text-ink-cream">3</div>
+          <h3 class="text-lg font-semibold mb-2">Start copying</h3>
+          <p class="text-sm text-white/50">Just use your Mac normally. Everything you copy gets saved. Press ⌘⇧V to find it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Install Section -->
+  <section id="install" class="py-20 bg-black/20">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Install in seconds</h2>
+        <p class="text-white/60">Paste Trail is distributed as a Homebrew tap. It builds from source on your machine — no notarization, no Apple account needed.</p>
+      </div>
+
+      <div class="glass rounded-2xl overflow-hidden">
+        <!-- Step 1 -->
+        <div class="p-6 border-b border-white/5">
+          <div class="flex items-start gap-4">
+            <div class="w-8 h-8 rounded-full bg-ink-steel/30 flex items-center justify-center flex-shrink-0 text-sm font-bold text-ink-cream mt-0.5">1</div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-white/60 mb-3">Add the tap and install:</p>
+              <div class="code-block rounded-xl p-4 font-mono text-sm space-y-2">
+                <div class="flex items-center gap-3">
+                  <span class="text-ink-steel select-none">$</span>
+                  <span class="flex-1 text-ink-cream">brew tap aryamanw/pastetrail</span>
+                  <button onclick="copyCmd(this, 'brew tap aryamanw/pastetrail')" class="copy-btn ml-auto flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/10 transition-colors" aria-label="Copy command">
+                    <svg class="copy-icon w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="8" height="8" rx="1.5"/><path d="M3 11V3h8"/></svg>
+                    <svg class="check-icon w-3.5 h-3.5 hidden" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 8 6 12 14 4"/></svg>
+                  </button>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="text-ink-steel select-none">$</span>
+                  <span class="flex-1 text-ink-cream">brew install pastetrail</span>
+                  <button onclick="copyCmd(this, 'brew install pastetrail')" class="copy-btn ml-auto flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/10 transition-colors" aria-label="Copy command">
+                    <svg class="copy-icon w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="8" height="8" rx="1.5"/><path d="M3 11V3h8"/></svg>
+                    <svg class="check-icon w-3.5 h-3.5 hidden" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 8 6 12 14 4"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="p-6 border-b border-white/5">
+          <div class="flex items-start gap-4">
+            <div class="w-8 h-8 rounded-full bg-ink-steel/30 flex items-center justify-center flex-shrink-0 text-sm font-bold text-ink-cream mt-0.5">2</div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-white/60 mb-3">Move the app to Applications:</p>
+              <div class="code-block rounded-xl p-4 font-mono text-sm">
+                <div class="flex items-center gap-3">
+                  <span class="text-ink-steel select-none">$</span>
+                  <span class="flex-1 text-ink-cream">cp -r $(brew --prefix)/opt/pastetrail/PasteTrail.app /Applications/</span>
+                  <button onclick="copyCmd(this, 'cp -r $(brew --prefix)/opt/pastetrail/PasteTrail.app /Applications/')" class="copy-btn ml-auto flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center text-white/30 hover:text-white/70 hover:bg-white/10 transition-colors" aria-label="Copy command">
+                    <svg class="copy-icon w-3.5 h-3.5" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="8" height="8" rx="1.5"/><path d="M3 11V3h8"/></svg>
+                    <svg class="check-icon w-3.5 h-3.5 hidden" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="2 8 6 12 14 4"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="p-6">
+          <div class="flex items-start gap-4">
+            <div class="w-8 h-8 rounded-full bg-ink-steel/30 flex items-center justify-center flex-shrink-0 text-sm font-bold text-ink-cream mt-0.5">3</div>
+            <div class="flex-1">
+              <p class="text-sm text-white/60">Launch Paste Trail from Applications, then grant <span class="text-white/80">Accessibility</span> access when prompted:</p>
+              <p class="text-sm text-white/40 mt-2 font-mono">System Settings → Privacy &amp; Security → Accessibility</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 text-center">
+        <a href="https://github.com/aryamanw/PasteTrail" class="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white/80 transition-colors">
+          <svg aria-hidden="true" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+          </svg>
+          View source and build instructions on GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section id="faq" class="py-20">
+    <div class="max-w-2xl mx-auto px-6">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4">Frequently asked questions</h2>
+      </div>
+
+      <div class="space-y-4">
+        <div class="glass rounded-xl p-6">
+          <h3 class="font-semibold mb-2">Which Mac models does this work on?</h3>
+          <p class="text-sm text-white/50">Any Mac running macOS 13 Ventura or later. That's most Macs from 2017 onward.</p>
+        </div>
+
+        <div class="glass rounded-xl p-6">
+          <h3 class="font-semibold mb-2">Does it send my data anywhere?</h3>
+          <p class="text-sm text-white/50">No. Zero network calls. Your clipboard stays on your machine. Verified with Little Snitch — you can verify it yourself.</p>
+        </div>
+
+        <div class="glass rounded-xl p-6">
+          <h3 class="font-semibold mb-2">Why only 20 clips?</h3>
+          <p class="text-sm text-white/50">20 covers the vast majority of real-world use — going back further than that is surprisingly rare. The rolling window keeps things snappy and the SQLite database tiny. It's free and open source, so if you want more, you can change the cap yourself.</p>
+        </div>
+
+        <div class="glass rounded-xl p-6">
+          <h3 class="font-semibold mb-2">Why does it need Accessibility access?</h3>
+          <p class="text-sm text-white/50">Accessibility is the only way for a background app to synthesise ⌘V into whichever app you're working in. Without it, Paste Trail can show your clips but can't paste them. It uses no other Accessibility API.</p>
+        </div>
+
+        <div class="glass rounded-xl p-6">
+          <h3 class="font-semibold mb-2">Will it capture my passwords?</h3>
+          <p class="text-sm text-white/50">No way. Paste Trail automatically ignores 1Password, Bitwarden, and Keychain. Those never make it into your history.</p>
+        </div>
+
+        <div class="glass rounded-xl p-6">
+          <h3 class="font-semibold mb-2">Is it really free?</h3>
+          <p class="text-sm text-white/50">Completely. No paid tier, no license key, no telemetry. It's MIT-licensed open source — <a href="https://github.com/aryamanw/PasteTrail" class="text-ink-cream hover:underline">read every line</a> if you like.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-12 border-t border-white/5">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div class="flex items-center gap-3">
+          <svg aria-hidden="true" class="w-6 h-6 text-ink-cream" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+            <path d="M9 4V3a1 1 0 0 1 2 0v1"/>
+          </svg>
+          <span class="font-semibold">Paste Trail</span>
+        </div>
+
+        <nav class="flex items-center gap-6 text-sm text-white/40">
+          <a href="https://github.com/aryamanw/PasteTrail" class="hover:text-white transition-colors flex items-center gap-1.5">
+            <svg aria-hidden="true" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+            </svg>
+            GitHub
+          </a>
+          <a href="https://github.com/aryamanw/PasteTrail/issues" class="hover:text-white transition-colors">Support</a>
+          <a href="https://github.com/aryamanw/PasteTrail/blob/main/LICENSE" class="hover:text-white transition-colors">MIT License</a>
+        </nav>
+
+        <div class="text-sm text-white/30">
+          © 2026 Aryaman. Open source under MIT.
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script>
+    function copyCmd(btn, text) {
+      navigator.clipboard.writeText(text).then(() => {
+        const copy = btn.querySelector('.copy-icon');
+        const check = btn.querySelector('.check-icon');
+        copy.classList.add('hidden');
+        check.classList.remove('hidden');
+        btn.classList.add('text-green-400');
+        setTimeout(() => {
+          check.classList.add('hidden');
+          copy.classList.remove('hidden');
+          btn.classList.remove('text-green-400');
+        }, 1500);
+      });
+    }
+  </script>
+</body>
+</html>
