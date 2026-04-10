@@ -7,11 +7,12 @@ A lightweight macOS menu bar clipboard manager. Stores the last 20 clips locally
 ```bash
 brew tap aryamanw/pastetrail
 brew install pastetrail
+cp -r /opt/homebrew/opt/pastetrail/PasteTrail.app /Applications/
 ```
 
-Then move the app to your Applications folder (shown in the post-install message) and grant Accessibility access on first launch.
+Then grant Accessibility access on first launch: **System Settings → Privacy & Security → Accessibility**.
 
-**Requirements:** macOS 13 Ventura or later · Xcode (installed via `xcode-select --install` is not enough — full Xcode required to build)
+**Requirements:** macOS 13 Ventura or later
 
 ## Features
 
