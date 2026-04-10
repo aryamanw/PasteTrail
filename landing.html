@@ -186,14 +186,14 @@
   </header>
 
   <!-- Hero Section -->
-  <section id="main" class="min-h-screen pt-24 relative overflow-hidden">
+  <section id="main" class="pt-24 relative overflow-hidden">
     <!-- Background gradients -->
     <div class="absolute inset-0 pointer-events-none">
       <div class="absolute top-0 left-1/4 w-96 h-96 bg-ink-steel/10 rounded-full blur-3xl"></div>
       <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-ink-steel/10 rounded-full blur-3xl"></div>
     </div>
 
-    <div class="max-w-6xl mx-auto px-6 py-20 md:py-32">
+    <div class="max-w-6xl mx-auto px-6 py-12 md:py-20">
       <div class="grid md:grid-cols-2 gap-12 items-center">
         <!-- Left: Text content -->
         <div class="animate-fade-in">
@@ -225,7 +225,7 @@
           </div>
 
           <div class="mt-8 flex items-center gap-4 text-sm text-white/40">
-            <span>⌘⇧V</span>
+            <span class="flex items-center gap-1"><kbd style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-size:11px;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-bottom-width:2px;color:rgba(255,255,255,0.55);line-height:1.4;">⌘</kbd><kbd style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-size:11px;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-bottom-width:2px;color:rgba(255,255,255,0.55);line-height:1.4;">⇧</kbd><kbd style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-size:11px;padding:1px 5px;border-radius:4px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-bottom-width:2px;color:rgba(255,255,255,0.55);line-height:1.4;">V</kbd></span>
             <span>Global&nbsp;shortcut</span>
             <span class="mx-2">•</span>
             <span>20&nbsp;clips</span>
@@ -317,9 +317,11 @@
             </div>
 
             <!-- Floating badge -->
-            <div class="absolute -right-4 top-1/2 glass px-3 py-2 rounded-lg -translate-y-1/2">
-              <span class="text-xs text-white/60">Press</span>
-              <span class="ml-1 font-mono text-ink-cream text-sm">⌘⇧V</span>
+            <div class="absolute -right-4 top-1/2 glass px-3 py-2 rounded-lg -translate-y-1/2 flex items-center gap-1.5">
+              <span class="text-xs text-white/50">Press</span>
+              <kbd style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-size:12px;padding:2px 6px;border-radius:5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-bottom-width:2px;color:#FFFFE3;line-height:1.4;">⌘</kbd>
+              <kbd style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-size:12px;padding:2px 6px;border-radius:5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-bottom-width:2px;color:#FFFFE3;line-height:1.4;">⇧</kbd>
+              <kbd style="font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-size:12px;padding:2px 6px;border-radius:5px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.18);border-bottom-width:2px;color:#FFFFE3;line-height:1.4;">V</kbd>
             </div>
           </div>
         </div>

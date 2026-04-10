@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(python3 /Users/aryaman/.claude/skills/ui-ux-pro-max/scripts/search.py \"macOS clipboard manager menu bar app glassmorphism ink wash dark productivity developer tool\" --design-system -p \"Paste Trail\" -f markdown)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)"
-    ]
-  }
-}
