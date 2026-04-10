@@ -6,7 +6,12 @@ import SwiftUI
 final class OnboardingWindowController: NSWindowController {
 
     static func makeIfNeeded() -> OnboardingWindowController? {
-        guard !AXIsProcessTrusted() else { return nil }
+        // Calling with prompt:true registers the app in System Settings → Accessibility
+        // so the user can toggle it on. Without this call, unsigned apps may never
+        // appear in the list and AXIsProcessTrusted() returns false indefinitely.
+        let options: NSDictionary = [kAXTrustedCheckOptionPrompt.takeRetainedValue(): true]
+        let trusted = AXIsProcessTrustedWithOptions(options)
+        guard !trusted else { return nil }
         return OnboardingWindowController()
     }
 
@@ -118,6 +123,10 @@ private struct OnboardingView: View {
         }
         .frame(width: 380, height: 400)
         .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
+            if AXIsProcessTrusted() { onDismiss() }
+        }
+        // Re-check immediately when the user returns to the app from System Settings
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
             if AXIsProcessTrusted() { onDismiss() }
         }
     }
