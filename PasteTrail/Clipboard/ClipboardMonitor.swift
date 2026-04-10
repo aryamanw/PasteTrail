@@ -19,9 +19,9 @@ final class ClipboardMonitor {
 
     let publisher = PassthroughSubject<ClipEvent, Never>()
 
-    /// Set to true while ClipStore is writing to the pasteboard for a paste action
-    /// so the resulting changeCount bump is ignored.
-    var isPasting = false
+    /// Incremented before a paste action, decremented after the suppression window.
+    /// Using a counter (not a Bool) means concurrent pastes don't clear each other's flag early.
+    var pastingCount = 0
 
     var excludePasswordManagers: Bool = true
 
@@ -70,12 +70,14 @@ final class ClipboardMonitor {
 
     private func poll() {
         let pasteboard = NSPasteboard.general
+        // Capture the frontmost app *before* checking changeCount so the bundle ID
+        // reflects which app triggered the copy, not whichever app is focused later.
+        let frontBundleID = NSWorkspace.shared.frontmostApplication?.bundleIdentifier
         guard pasteboard.changeCount != lastChangeCount else { return }
         lastChangeCount = pasteboard.changeCount
 
-        guard !isPasting else { return }
+        guard pastingCount == 0 else { return }
 
-        let frontBundleID = NSWorkspace.shared.frontmostApplication?.bundleIdentifier
         if excludePasswordManagers {
             guard !Self.isExcluded(bundleID: frontBundleID) else { return }
         }
@@ -85,6 +87,7 @@ final class ClipboardMonitor {
 
         // 1. TIFF or PNG image data on the pasteboard
         if let rawData = pasteboard.data(forType: .tiff) ?? pasteboard.data(forType: NSPasteboard.PasteboardType("public.png")),
+           rawData.count < 50_000_000, // 50 MB cap — reject oversized pasteboard images
            let image = NSImage(data: rawData),
            let pngData = image.pngRepresentation() {
             let capture = ImageCapture(id: UUID(), pngData: pngData, sourceApp: sourceApp, timestamp: timestamp)
@@ -92,20 +95,28 @@ final class ClipboardMonitor {
             return
         }
 
-        // 2. Finder file copy — first image file in the selection
+        // 2. Finder file copy — first image file in the selection.
+        // Resolve symlinks and enforce a size cap before loading to prevent arbitrary file
+        // reads via crafted pasteboard paths and memory-exhaustion via oversized files.
         if let filePaths = pasteboard.propertyList(forType: NSPasteboard.PasteboardType("NSFilenamesPboardType")) as? [String],
            let firstImagePath = filePaths.first(where: {
                Self.imageExtensions.contains(URL(fileURLWithPath: $0).pathExtension.lowercased())
-           }),
-           let image = NSImage(contentsOfFile: firstImagePath),
-           let pngData = image.pngRepresentation() {
-            let capture = ImageCapture(id: UUID(), pngData: pngData, sourceApp: sourceApp, timestamp: timestamp)
-            publisher.send(.image(capture))
-            return
+           }) {
+            let resolvedURL = URL(fileURLWithPath: firstImagePath).resolvingSymlinksInPath()
+            let fileSize = (try? resolvedURL.resourceValues(forKeys: [.fileSizeKey]))?.fileSize ?? 0
+            if fileSize > 0, fileSize < 50_000_000, // 50 MB cap
+               let image = NSImage(contentsOf: resolvedURL),
+               let pngData = image.pngRepresentation() {
+                let capture = ImageCapture(id: UUID(), pngData: pngData, sourceApp: sourceApp, timestamp: timestamp)
+                publisher.send(.image(capture))
+                return
+            }
         }
 
         // 3. Plain text
-        guard let text = pasteboard.string(forType: .string), !text.isEmpty else { return }
+        guard let text = pasteboard.string(forType: .string), !text.isEmpty,
+              text.utf8.count < 1_000_000 // 1 MB cap — reject oversized text clips
+        else { return }
         let item = ClipItem(
             id: UUID(),
             contentType: .text,

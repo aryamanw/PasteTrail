@@ -20,7 +20,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         settingsStore = SettingsStore()
         do {
-            clipStore = try ClipStore()
+            if settingsStore.ephemeralMode {
+                // Ephemeral mode: in-memory DB, no history persisted to disk.
+                let tmpDir = FileManager.default.temporaryDirectory.appendingPathComponent("PasteTrail-ephemeral-\(UUID().uuidString)", isDirectory: true)
+                clipStore = try ClipStore(dbQueue: .init(), imagesDirectory: tmpDir)
+            } else {
+                clipStore = try ClipStore()
+            }
         } catch {
             // Storage failure is non-recoverable; log and continue without history
             os_log(.error, "ClipStore init failed: %{public}@", error.localizedDescription)

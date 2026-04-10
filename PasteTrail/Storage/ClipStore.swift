@@ -29,12 +29,21 @@ final class ClipStore: ObservableObject {
     }
 
     /// Convenience init using the on-disk database at the default app-support path.
+    /// Sets 0600 permissions on the SQLite file so other processes running as the
+    /// same user cannot read clipboard history directly from disk.
     convenience init() throws {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         let dir = appSupport.appendingPathComponent("PasteTrail", isDirectory: true)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         let dbURL = dir.appendingPathComponent("clips.sqlite")
         let queue = try DatabaseQueue(path: dbURL.path)
+        // Restrict the SQLite file to owner-read/write only (0600).
+        // WAL side-files (-wal, -shm) are created by SQLite alongside the main file and
+        // inherit the directory's umask, so we set them explicitly too if they exist.
+        let restrictedAttrs: [FileAttributeKey: Any] = [.posixPermissions: 0o600]
+        try? FileManager.default.setAttributes(restrictedAttrs, ofItemAtPath: dbURL.path)
+        try? FileManager.default.setAttributes(restrictedAttrs, ofItemAtPath: dbURL.path + "-wal")
+        try? FileManager.default.setAttributes(restrictedAttrs, ofItemAtPath: dbURL.path + "-shm")
         let imagesDir = dir.appendingPathComponent("images", isDirectory: true)
         try self.init(dbQueue: queue, imagesDirectory: imagesDir)
     }
@@ -136,9 +145,18 @@ final class ClipStore: ObservableObject {
     }
 
     private func deleteImageFileIfNeeded(_ item: ClipItem) {
-        guard item.contentType == .image, let filename = item.imagePath else { return }
-        let fileURL = imagesDirectory.appendingPathComponent(filename)
+        guard item.contentType == .image, let fileURL = safeImageURL(for: item) else { return }
         try? FileManager.default.removeItem(at: fileURL)
+    }
+
+    /// Resolves `item.imagePath` relative to `imagesDirectory` and returns the URL only if it
+    /// stays within that directory after symlink resolution. Returns nil for any path escape attempt.
+    func safeImageURL(for item: ClipItem) -> URL? {
+        guard item.contentType == .image, let filename = item.imagePath else { return nil }
+        let candidate = imagesDirectory.appendingPathComponent(filename).resolvingSymlinksInPath()
+        let base = imagesDirectory.resolvingSymlinksInPath().path
+        guard candidate.path.hasPrefix(base + "/") || candidate.path == base else { return nil }
+        return candidate
     }
 
     // MARK: - Search
@@ -192,22 +210,21 @@ final class ClipStore: ObservableObject {
         case .text:
             pasteboard.setString(item.text, forType: .string)
         case .image:
-            guard let filename = item.imagePath else { return }
-            let fileURL = imagesDirectory.appendingPathComponent(filename)
-            guard let image = NSImage(contentsOf: fileURL),
+            guard let fileURL = safeImageURL(for: item),
+                  let image = NSImage(contentsOf: fileURL),
                   let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return }
             let rep = NSBitmapImageRep(cgImage: cgImage)
             guard let tiffData = rep.representation(using: .tiff, properties: [:]) else { return }
             pasteboard.setData(tiffData, forType: .tiff)
         }
 
-        monitor?.isPasting = true
+        monitor?.pastingCount += 1
 
         Task { @MainActor [weak self] in
             try? await Task.sleep(nanoseconds: 350_000_000) // 350ms — wait for popover close animation + focus transfer
             self?.sendCommandV()
             try? await Task.sleep(nanoseconds: 200_000_000) // 200ms
-            self?.monitor?.isPasting = false
+            self?.monitor?.pastingCount -= 1
         }
     }
 

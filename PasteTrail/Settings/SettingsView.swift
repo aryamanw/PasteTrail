@@ -53,6 +53,8 @@ struct SettingsView: View {
                     settingsSection("Privacy") {
                         toggleRow("Exclude password managers", isOn: $settingsStore.excludePasswordManagers,
                                   subtitle: "1Password, Bitwarden, Keychain")
+                        toggleRow("Ephemeral mode", isOn: $settingsStore.ephemeralMode,
+                                  subtitle: "History stored in memory only — lost on quit. Takes effect on next launch.")
                     }
                     settingsSection("Keyboard Shortcut") {
                         HStack {

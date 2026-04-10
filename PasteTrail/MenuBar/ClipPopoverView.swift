@@ -162,7 +162,7 @@ struct ClipPopoverView: View {
             ScrollView {
                 LazyVStack(spacing: 2) {
                     ForEach(Array(displayedClips.enumerated()), id: \.element.id) { idx, clip in
-                        ClipRowView(clip: clip, imagesDirectory: clipStore.imagesDirectory,
+                        ClipRowView(clip: clip, clipStore: clipStore,
                                     isSelected: nav.selectedIndex == idx) {
                             closeAndPaste(clip)
                         }
@@ -221,7 +221,7 @@ struct ClipPopoverView: View {
 private struct ClipRowView: View {
 
     let clip: ClipItem
-    let imagesDirectory: URL
+    let clipStore: ClipStore
     let isSelected: Bool
     let onTap: () -> Void
 
@@ -281,8 +281,7 @@ private struct ClipRowView: View {
         .onHover { isHovered = $0 }
         .task(id: clip.id) {
             guard clip.contentType == .image, thumbnail == nil,
-                  let filename = clip.imagePath else { return }
-            let fileURL = imagesDirectory.appendingPathComponent(filename)
+                  let fileURL = clipStore.safeImageURL(for: clip) else { return }
             let loaded = await Task.detached(priority: .background) {
                 NSImage(contentsOf: fileURL)
             }.value

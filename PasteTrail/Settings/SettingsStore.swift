@@ -27,6 +27,12 @@ final class SettingsStore: ObservableObject {
         }
     }
 
+    /// When true, ClipStore operates from an in-memory database — no clipboard history
+    /// is written to disk. History is lost when the app quits.
+    @Published var ephemeralMode: Bool {
+        didSet { defaults.set(ephemeralMode, forKey: Keys.ephemeralMode) }
+    }
+
     // MARK: - Init
 
     private let defaults: UserDefaults
@@ -37,6 +43,7 @@ final class SettingsStore: ObservableObject {
         static let excludePasswordManagers = "excludePasswordManagers"
         static let showMenuBarIcon         = "showMenuBarIcon"
         static let launchAtLogin           = "launchAtLogin"
+        static let ephemeralMode           = "ephemeralMode"
     }
 
     init(defaults: UserDefaults = .standard) {
@@ -45,6 +52,7 @@ final class SettingsStore: ObservableObject {
         excludePasswordManagers = defaults.object(forKey: Keys.excludePasswordManagers) as? Bool ?? true
         showMenuBarIcon = defaults.object(forKey: Keys.showMenuBarIcon) as? Bool ?? true
         launchAtLogin = defaults.bool(forKey: Keys.launchAtLogin)
+        ephemeralMode = defaults.bool(forKey: Keys.ephemeralMode)
     }
 
     // MARK: - Login item
